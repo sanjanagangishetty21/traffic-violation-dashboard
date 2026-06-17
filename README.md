@@ -38,11 +38,6 @@ Double-click the **`run.bat`** script in the project root. This script will:
 3. Install required Python libraries (`pip install -r backend/requirements.txt`).
 4. Start the FastAPI uvicorn server at `http://localhost:8000`.
 
-Open your browser and navigate to:
-* **Dashboard Interface:** [http://localhost:8000/dashboard/index.html](http://localhost:8000/dashboard/index.html)
-* **API Documentation:** [http://localhost:8000/docs](http://localhost:8000/docs)
-
----
 
 ## 🌐 Cloud Deployment Architecture
 
