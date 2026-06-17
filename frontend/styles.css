@@ -1459,3 +1459,179 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: var(--text-secondary);
 }
+
+/* ==========================================================================
+   Responsive Design & Media Queries
+   ========================================================================== */
+
+/* Tablet Portrait & Medium Screens */
+@media (max-width: 1024px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .monitor-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .analytics-charts-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Mobile Screens */
+@media (max-width: 768px) {
+    body {
+        overflow: auto;
+        height: auto;
+    }
+
+    .app-container {
+        flex-direction: column;
+        height: auto;
+        width: 100vw;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        padding: 16px;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        flex-shrink: 1;
+    }
+
+    .sidebar-brand {
+        margin-bottom: 16px;
+        justify-content: center;
+    }
+
+    .sidebar-menu {
+        flex-direction: row;
+        overflow-x: auto;
+        gap: 8px;
+        padding-bottom: 8px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .menu-item {
+        padding: 8px 14px;
+        font-size: 13px;
+        white-space: nowrap;
+        justify-content: center;
+    }
+
+    .sidebar-status {
+        display: none;
+    }
+
+    .main-content {
+        height: auto;
+        overflow: visible;
+    }
+
+    .main-header {
+        height: auto;
+        padding: 16px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .header-search {
+        width: 100%;
+    }
+
+    .header-actions {
+        width: 100%;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .content-container {
+        padding: 16px;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .dashboard-chart-card, .recent-alerts-card {
+        height: 340px;
+    }
+
+    .image-viewer-container {
+        height: 300px;
+    }
+
+    .monitor-sidebar {
+        height: auto;
+    }
+
+    #settings-canvas {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .filter-toolbar {
+        flex-direction: column;
+        gap: 12px;
+        align-items: stretch;
+    }
+
+    .filter-group {
+        width: 100%;
+    }
+
+    .filter-group select {
+        width: 100%;
+    }
+
+    .table-container {
+        overflow-x: auto;
+        width: 100%;
+    }
+
+    .data-table {
+        min-width: 600px;
+    }
+
+    .eval-details-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-image-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .evidence-view {
+        height: 200px;
+    }
+
+    .modal-details-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .evaluation-control {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+        text-align: center;
+    }
+
+    .control-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
