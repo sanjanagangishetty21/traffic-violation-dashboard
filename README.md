@@ -49,3 +49,5 @@ The application uses a **split deployment** model to optimize host performance a
 2. **Backend (Render / Railway / VPS):**
    * The FastAPI server is hosted on a platform supporting Docker / standard Python environments.
    * Integrates the large YOLO and EasyOCR models with persistent storage.
+
+👉 **Live Dashboard:** [https://traffic-violation-dashboard.vercel.app](https://traffic-violation-dashboard.vercel.app)
