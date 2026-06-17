@@ -2,6 +2,13 @@
 
 APIC-TV is a modern, web-based traffic enforcement dashboard powered by Computer Vision. The system processes video/image feeds to detect traffic violations in real-time, extracts license plates using Optical Character Recognition (OCR), and provides a comprehensive dashboard for station administrators to review citations and monitor intersection performance.
 
+## 🌐 Live Demo Preview
+
+You can test and view the dashboard instantly online (no installation required):
+👉 **Live Dashboard:** [https://traffic-violation-dashboard.vercel.app](https://traffic-violation-dashboard.vercel.app)
+
+*Note: When accessed online, the dashboard automatically runs in **Browser-Only Demo Mode**. It simulates the database (using localStorage), analytical graphs, and CV processing client-side using dynamic canvas drawings so you can inspect all features immediately without hosting a GPU server.*
+
 ## 🚀 Features
 
 * **Real-time Live Monitoring:** Upload intersection snapshots or run simulations to detect active vehicles, pedestrians, and license plates.
