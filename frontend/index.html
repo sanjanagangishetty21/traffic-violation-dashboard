@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APIC-TV | Intelligent Traffic Enforcement Dashboard</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for gorgeous analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <i class="fa-solid fa-traffic-light brand-icon"></i>
+                <div class="brand-text">
+                    <h1>APIC-TV</h1>
+                    <span>Traffic AI Engine</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <a href="#dashboard" class="menu-item active" data-tab="dashboard">
+                    <i class="fa-solid fa-chart-line"></i> Dashboard
+                </a>
+                <a href="#monitor" class="menu-item" data-tab="monitor">
+                    <i class="fa-solid fa-video"></i> Live Monitor
+                </a>
+                <a href="#history" class="menu-item" data-tab="history">
+                    <i class="fa-solid fa-list-check"></i> Violations History
+                </a>
+                <a href="#analytics" class="menu-item" data-tab="analytics">
+                    <i class="fa-solid fa-chart-pie"></i> Analytics & Reports
+                </a>
+                <a href="#evaluation" class="menu-item" data-tab="evaluation">
+                    <i class="fa-solid fa-gauge-high"></i> Model Evaluation
+                </a>
+                <a href="#settings" class="menu-item" data-tab="settings">
+                    <i class="fa-solid fa-sliders"></i> Junction Settings
+                </a>
+            </nav>
+            
+            <div class="sidebar-status">
+                <div class="status-indicator online"></div>
+                <div class="status-details">
+                    <p class="status-title">System Status</p>
+                    <p class="status-desc">AI Engine: Online</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="main-content">
+            <!-- Top Header -->
+            <header class="main-header">
+                <div class="header-search">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="global-search" placeholder="Quick search license plate (e.g. DL 03)...">
+                </div>
+                <div class="header-actions">
+                    <div class="time-widget">
+                        <i class="fa-regular fa-clock"></i>
+                        <span id="current-time">12:00:00 PM</span>
+                    </div>
+                    <div class="theme-toggle" id="theme-btn">
+                        <i class="fa-solid fa-moon"></i>
+                    </div>
+                    <div class="profile-widget">
+                        <div class="profile-avatar">AD</div>
+                        <div class="profile-info">
+                            <span class="profile-name">Enforcement Admin</span>
+                            <span class="profile-role">Station #12</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Container -->
+            <div class="content-container">
+                
+                <!-- PANEL 1: DASHBOARD -->
+                <section id="panel-dashboard" class="panel active">
+                    <div class="panel-header">
+                        <h2>Dashboard Overview</h2>
+                        <span class="panel-subtitle">Real-time statistics and activity feed</span>
+                    </div>
+                    
+                    <!-- Stats Grid -->
+                    <div class="stats-grid">
+                        <div class="stat-card blue">
+                            <div class="stat-header">
+                                <span class="stat-title">Total Violations</span>
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </div>
+                            <h3 class="stat-value" id="card-total-violations">0</h3>
+                            <span class="stat-trend"><i class="fa-solid fa-arrow-up"></i> +12.5% this hour</span>
+                        </div>
+                        <div class="stat-card red">
+                            <div class="stat-header">
+                                <span class="stat-title">Unreviewed Tickets</span>
+                                <i class="fa-solid fa-ticket-simple"></i>
+                            </div>
+                            <h3 class="stat-value" id="card-pending-violations">0</h3>
+                            <span class="stat-trend"><i class="fa-solid fa-clock"></i> Action required</span>
+                        </div>
+                        <div class="stat-card green">
+                            <div class="stat-header">
+                                <span class="stat-title">Detection Accuracy</span>
+                                <i class="fa-solid fa-bullseye"></i>
+                            </div>
+                            <h3 class="stat-value" id="card-model-accuracy">94.8%</h3>
+                            <span class="stat-trend"><i class="fa-solid fa-shield-halved"></i> Stable</span>
+                        </div>
+                        <div class="stat-card purple">
+                            <div class="stat-header">
+                                <span class="stat-title">Active Cameras</span>
+                                <i class="fa-solid fa-camera-web"></i>
+                            </div>
+                            <h3 class="stat-value" id="card-active-cameras">18 / 18</h3>
+                            <span class="stat-trend"><i class="fa-solid fa-check"></i> 100% operational</span>
+                        </div>
+                    </div>
+
+                    <!-- Dashboard Dashboard Main Grid -->
+                    <div class="dashboard-grid">
+                        <div class="dashboard-chart-card glass">
+                            <div class="card-header">
+                                <h4>Violation Severity Trends</h4>
+                                <div class="chart-options">
+                                    <button class="btn btn-sm btn-outline active">Today</button>
+                                    <button class="btn btn-sm btn-outline">Week</button>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="dashboard-trend-chart"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div class="recent-alerts-card glass">
+                            <div class="card-header">
+                                <h4>Live Violation Feed</h4>
+                                <span class="badge badge-pulse red">LIVE</span>
+                            </div>
+                            <div class="alerts-feed" id="dashboard-recent-feed">
+                                <!-- Populated dynamically by JS -->
+                                <div class="feed-placeholder">
+                                    <i class="fa-solid fa-satellite-dish fa-spin"></i>
+                                    <p>Waiting for violations logs...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- PANEL 2: LIVE MONITOR -->
+                <section id="panel-monitor" class="panel">
+                    <div class="panel-header">
+                        <h2>Camera Monitor & AI Analysis</h2>
+                        <span class="panel-subtitle">Upload evidence or run simulations to test our detection pipeline</span>
+                    </div>
+
+                    <div class="monitor-container">
+                        <!-- Left Panel: Monitor Workspace -->
+                        <div class="monitor-workspace glass">
+                            <div class="workspace-toolbar">
+                                <div class="toolbar-controls">
+                                    <label class="btn btn-sm btn-primary" for="file-upload-input">
+                                        <i class="fa-solid fa-file-arrow-up"></i> Upload Traffic Image
+                                    </label>
+                                    <input type="file" id="file-upload-input" accept="image/*" style="display: none;">
+                                    
+                                    <button class="btn btn-sm btn-outline" id="btn-run-simulation">
+                                        <i class="fa-solid fa-wand-magic-sparkles"></i> Load Demo Scene
+                                    </button>
+                                </div>
+                                
+                                <div class="traffic-light-badge">
+                                    Traffic Light State:
+                                    <span class="badge" id="monitor-light-badge">Red</span>
+                                </div>
+                            </div>
+
+                            <!-- Upload/Display Area -->
+                            <div class="image-viewer-container" id="drop-zone">
+                                <div class="upload-placeholder" id="upload-placeholder-view">
+                                    <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+                                    <h3>Drag & Drop Traffic Image Here</h3>
+                                    <p>Or click "Upload Traffic Image" to select a file from your system</p>
+                                    <div class="file-limits">Supports JPG, PNG (Max 15MB)</div>
+                                </div>
+                                <div class="image-display-wrapper" id="image-display-view" style="display: none;">
+                                    <img id="monitor-preview-img" src="" alt="Traffic Stream">
+                                    <!-- Canvas overlays if drawn -->
+                                </div>
+                                
+                                <!-- Loading overlay -->
+                                <div class="loading-overlay" id="monitor-loading" style="display: none;">
+                                    <div class="spinner"></div>
+                                    <p>Analyzing frame with computer vision models...</p>
+                                </div>
+                            </div>
+
+                            <!-- Environment Settings / Preprocessing filters -->
+                            <div class="preprocessing-bar">
+                                <span class="bar-title"><i class="fa-solid fa-wand-magic"></i> Preprocessing Filters:</span>
+                                <div class="filter-toggles">
+                                    <label class="filter-toggle">
+                                        <input type="checkbox" id="filter-lowlight">
+                                        <span class="toggle-slider"></span>
+                                        Low Light (CLAHE)
+                                    </label>
+                                    <label class="filter-toggle">
+                                        <input type="checkbox" id="filter-dehaze">
+                                        <span class="toggle-slider"></span>
+                                        Fog/Haze Dehaze
+                                    </label>
+                                    <label class="filter-toggle">
+                                        <input type="checkbox" id="filter-shadow">
+                                        <span class="toggle-slider"></span>
+                                        Shadow Attenuation
+                                    </label>
+                                    <label class="filter-toggle">
+                                        <input type="checkbox" id="filter-sharpen">
+                                        <span class="toggle-slider"></span>
+                                        Motion Blur Sharpen
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Panel: Detections & OCR -->
+                        <div class="monitor-sidebar glass">
+                            <div class="sidebar-header">
+                                <h3>Processing Results</h3>
+                            </div>
+                            
+                            <div class="sidebar-results" id="monitor-results-panel">
+                                <div class="result-placeholder">
+                                    <i class="fa-solid fa-circle-info"></i>
+                                    <p>Upload a traffic image to inspect real-time detection, plate OCR, and violation results.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- PANEL 3: VIOLATIONS HISTORY -->
+                <section id="panel-history" class="panel">
+                    <div class="panel-header">
+                        <h2>Violations Log & Resolution</h2>
+                        <span class="panel-subtitle">Review, search, and manage traffic citation records</span>
+                    </div>
+
+                    <div class="filter-toolbar glass">
+                        <div class="search-box">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="filter-search-input" placeholder="Search plates, vehicle type...">
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label>Violation Type:</label>
+                            <select id="filter-violation-type">
+                                <option value="">All Violations</option>
+                                <option value="Helmet Non-compliance">Helmet Non-compliance</option>
+                                <option value="Seatbelt Non-compliance">Seatbelt Non-compliance</option>
+                                <option value="Triple Riding">Triple Riding</option>
+                                <option value="Wrong-side Driving">Wrong-side Driving</option>
+                                <option value="Red-light Violation">Red-light Violation</option>
+                                <option value="Illegal Parking">Illegal Parking</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label>Review Status:</label>
+                            <select id="filter-review-status">
+                                <option value="">All Statuses</option>
+                                <option value="pending">Pending Review</option>
+                                <option value="approved">Approved</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                        </div>
+
+                        <button class="btn btn-outline" id="btn-export-csv">
+                            <i class="fa-solid fa-file-csv"></i> Export CSV
+                        </button>
+                    </div>
+
+                    <!-- Table container -->
+                    <div class="table-container glass">
+                        <table class="data-table" id="violations-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Timestamp</th>
+                                    <th>Violation Type</th>
+                                    <th>Vehicle</th>
+                                    <th>License Plate</th>
+                                    <th>Confidence</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="violations-table-body">
+                                <!-- Dynamically populated -->
+                            </tbody>
+                        </table>
+                        
+                        <div class="pagination-footer">
+                            <div class="pagination-info" id="pagination-summary">
+                                Showing 0 to 0 of 0 records
+                            </div>
+                            <div class="pagination-controls">
+                                <button class="btn btn-sm btn-outline" id="btn-prev-page" disabled>
+                                    <i class="fa-solid fa-chevron-left"></i> Previous
+                                </button>
+                                <span class="page-num" id="current-page-display">Page 1</span>
+                                <button class="btn btn-sm btn-outline" id="btn-next-page" disabled>
+                                    Next <i class="fa-solid fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- PANEL 4: ANALYTICS & REPORTS -->
+                <section id="panel-analytics" class="panel">
+                    <div class="panel-header">
+                        <h2>Analytics & Performance Reporting</h2>
+                        <span class="panel-subtitle">Historical breakdown, peak violation periods, and traffic insights</span>
+                    </div>
+
+                    <div class="analytics-charts-grid">
+                        <div class="chart-card-large glass">
+                            <h4>Violation Categories Distribution</h4>
+                            <div class="chart-wrapper">
+                                <canvas id="chart-violation-types"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="chart-card-large glass">
+                            <h4>Peak Hour Violation Density</h4>
+                            <div class="chart-wrapper">
+                                <canvas id="chart-hourly-density"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="chart-card-medium glass">
+                            <h4>Vehicle Category Distribution</h4>
+                            <div class="chart-wrapper">
+                                <canvas id="chart-vehicle-types"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="chart-card-medium glass">
+                            <h4>Review & Resolution Summary</h4>
+                            <div class="chart-wrapper">
+                                <canvas id="chart-resolution-rates"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- PANEL 5: MODEL EVALUATION -->
+                <section id="panel-evaluation" class="panel">
+                    <div class="panel-header">
+                        <h2>AI Model Performance & Evaluation</h2>
+                        <span class="panel-subtitle">Accuracy metrics assessed on Roboflow license plate recognition test split</span>
+                    </div>
+
+                    <!-- Evaluation Trigger Panel -->
+                    <div class="evaluation-control glass">
+                        <div class="control-text">
+                            <h3>Test Set Validation Suite</h3>
+                            <p>Run validation against the <code>data/test</code> subset (labels annotated in YOLO format). This reads the images, runs vehicle detection, matches bounding boxes, detects license plates, and validates predictions against ground truth.</p>
+                        </div>
+                        <div class="control-actions">
+                            <div class="sample-slider">
+                                <label for="eval-samples-slider">Test Samples: <span id="eval-samples-val">30</span></label>
+                                <input type="range" id="eval-samples-slider" min="5" max="50" value="30">
+                            </div>
+                            <button class="btn btn-primary" id="btn-run-evaluation">
+                                <i class="fa-solid fa-circle-play"></i> Run Validation Suite
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Metrics Grid -->
+                    <div class="metrics-grid">
+                        <div class="metric-card glass">
+                            <span class="metric-label">Precision</span>
+                            <h3 class="metric-value text-blue" id="eval-precision">-</h3>
+                            <p class="metric-desc">Ratio of true plate detections to total predicted plates</p>
+                        </div>
+                        <div class="metric-card glass">
+                            <span class="metric-label">Recall</span>
+                            <h3 class="metric-value text-green" id="eval-recall">-</h3>
+                            <p class="metric-desc">Ratio of true plate detections to total actual plates</p>
+                        </div>
+                        <div class="metric-card glass">
+                            <span class="metric-label">F1-Score</span>
+                            <h3 class="metric-value text-purple" id="eval-f1">-</h3>
+                            <p class="metric-desc">Harmonic mean of model precision and recall</p>
+                        </div>
+                        <div class="metric-card glass">
+                            <span class="metric-label">mAP @ 0.5 IoU</span>
+                            <h3 class="metric-value text-yellow" id="eval-map">-</h3>
+                            <p class="metric-desc">Mean Average Precision at 50% overlap threshold</p>
+                        </div>
+                    </div>
+
+                    <!-- Matrix & Info Grid -->
+                    <div class="eval-details-grid">
+                        <div class="confusion-matrix-card glass">
+                            <h4>Detection Match Matrix</h4>
+                            <div class="matrix-container">
+                                <div class="matrix-row">
+                                    <div class="matrix-cell label"></div>
+                                    <div class="matrix-cell label header">Ground Truth (Yes)</div>
+                                    <div class="matrix-cell label header">Ground Truth (No)</div>
+                                </div>
+                                <div class="matrix-row">
+                                    <div class="matrix-cell label header y-axis">Predicted (Yes)</div>
+                                    <div class="matrix-cell value tp" id="matrix-tp">0</div>
+                                    <div class="matrix-cell value fp" id="matrix-fp">0</div>
+                                </div>
+                                <div class="matrix-row">
+                                    <div class="matrix-cell label header y-axis">Predicted (No)</div>
+                                    <div class="matrix-cell value fn" id="matrix-fn">0</div>
+                                    <div class="matrix-cell value tn">N/A</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="eval-info-card glass">
+                            <h4>Performance Breakdown & Analysis</h4>
+                            <div class="eval-notes">
+                                <p><strong>Dataset Source:</strong> Roboflow Universe License Plate Project <code>version 11</code>.</p>
+                                <p><strong>Pipeline Verification:</strong> Predictions are considered matches (True Positives) if the bounding box has an <strong>Intersection over Union (IoU) >= 0.50</strong> with the corresponding ground truth label.</p>
+                                <p><strong>Computational Speed:</strong> Average inference latency on current host environment: <span class="badge badge-pulse green" id="eval-latency">~45ms / frame</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- PANEL 6: JUNCTION SETTINGS -->
+                <section id="panel-settings" class="panel">
+                    <div class="panel-header">
+                        <h2>Interactive Junction Configuration</h2>
+                        <span class="panel-subtitle">Draw detection zones directly on the video stream canvas to calibrate enforcement heuristics</span>
+                    </div>
+
+                    <div class="settings-workspace glass">
+                        <div class="settings-toolbar">
+                            <div class="tool-select">
+                                <button class="btn btn-sm btn-outline active" data-tool="stop_line">
+                                    <i class="fa-solid fa-slash"></i> Draw Stop Line
+                                </button>
+                                <button class="btn btn-sm btn-outline" data-tool="no_parking">
+                                    <i class="fa-solid fa-draw-polygon"></i> Draw No Parking Zone
+                                </button>
+                            </div>
+                            
+                            <div class="light-toggle-control">
+                                <label>Traffic Light Simulation State:</label>
+                                <select id="settings-light-state" class="form-select">
+                                    <option value="Red">Red (Enforces Stop Line)</option>
+                                    <option value="Green">Green (Allows Crossing)</option>
+                                </select>
+                            </div>
+
+                            <button class="btn btn-sm btn-primary" id="btn-save-settings">
+                                <i class="fa-solid fa-floppy-disk"></i> Save Calibrations
+                            </button>
+                        </div>
+
+                        <div class="canvas-draw-container">
+                            <canvas id="settings-canvas" width="800" height="600"></canvas>
+                            <div class="canvas-instructions">
+                                <p><i class="fa-solid fa-circle-info"></i> <strong>How to configure:</strong></p>
+                                <p id="tool-instruction-text">Draw Stop Line: Click to place start point, drag, and release to set the enforcement boundary line.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Detail View Modal -->
+    <div class="modal-overlay" id="violation-modal" style="display: none;">
+        <div class="modal-card glass">
+            <div class="modal-header">
+                <h3>Violation Evidence Log #<span id="modal-violation-id">000</span></h3>
+                <button class="modal-close" id="btn-close-modal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-image-grid">
+                    <div class="evidence-view">
+                        <span class="view-tag">Annotated Evidence</span>
+                        <img id="modal-annotated-img" src="" alt="Annotated Evidence">
+                    </div>
+                    <div class="evidence-view">
+                        <span class="view-tag">Original Image</span>
+                        <img id="modal-original-img" src="" alt="Original Capture">
+                    </div>
+                </div>
+
+                <div class="modal-details-grid">
+                    <div class="details-table">
+                        <div class="detail-row">
+                            <span class="detail-lbl">Timestamp:</span>
+                            <span class="detail-val" id="modal-timestamp">-</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-lbl">Violation Category:</span>
+                            <span class="detail-val badge badge-red" id="modal-type">-</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-lbl">Vehicle Type:</span>
+                            <span class="detail-val" id="modal-vehicle">-</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-lbl">Detected License Plate:</span>
+                            <span class="detail-val plate-text-badge" id="modal-plate">-</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-lbl">AI Confidence Score:</span>
+                            <span class="detail-val" id="modal-confidence">-</span>
+                        </div>
+                    </div>
+
+                    <div class="modal-review-actions">
+                        <h4>Review Action Required</h4>
+                        <p>Verify that the bounding boxes match and plate transcription is accurate before generating citation.</p>
+                        
+                        <div class="action-buttons">
+                            <button class="btn btn-success" id="btn-modal-approve">
+                                <i class="fa-solid fa-check"></i> Approve & Issue Ticket
+                            </button>
+                            <button class="btn btn-danger" id="btn-modal-reject">
+                                <i class="fa-solid fa-trash-can"></i> Reject Citation
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Core App logic -->
+    <script src="app.js"></script>
+</body>
+</html>

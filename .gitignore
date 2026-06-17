@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+build/
+dist/
+
+# SQLite database
+backend/traffic_system.db
+
+# Large dataset files
+archive (1).zip
+data/
+static/uploads/*
+!static/uploads/.gitkeep
+
+# IDE / System files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
