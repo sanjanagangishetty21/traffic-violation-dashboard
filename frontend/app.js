@@ -892,127 +892,145 @@ async function uploadFile(file) {
             const uploadedDataUrl = e.target.result;
             const img = new Image();
             img.onload = function() {
-                const canvas = document.createElement("canvas");
-                canvas.width = img.width;
-                canvas.height = img.height;
-                const ctx = canvas.getContext("2d");
-                
-                ctx.drawImage(img, 0, 0);
-                
-                const violationTypes = [
-                    "Helmet Non-compliance",
-                    "Seatbelt Non-compliance",
-                    "Triple Riding",
-                    "Wrong-side Driving",
-                    "Red-light Violation",
-                    "Illegal Parking"
-                ];
-                
-                let selectedViolation = violationTypes[Math.floor(Math.random() * violationTypes.length)];
-                if (activeSettings.traffic_light_state === "Red" && Math.random() < 0.6) {
-                    selectedViolation = "Red-light Violation";
-                }
-                
-                const vehicleClasses = {
-                    "Helmet Non-compliance": "motorcycle",
-                    "Seatbelt Non-compliance": "car",
-                    "Triple Riding": "motorcycle",
-                    "Wrong-side Driving": "car",
-                    "Red-light Violation": "car",
-                    "Illegal Parking": "car"
-                };
-                
-                const states = ["DL", "MH", "KA", "HR", "UP", "TN", "AP", "GJ", "WB", "KL"];
-                const state = states[Math.floor(Math.random() * states.length)];
-                const letters = String.fromCharCode(65 + Math.floor(Math.random() * 26)) + String.fromCharCode(65 + Math.floor(Math.random() * 26));
-                const num = Math.floor(1000 + Math.random() * 9000);
-                const generatedPlate = `${state} ${Math.floor(Math.random()*99).toString().padStart(2, '0')} ${letters} ${num}`;
-                
-                const w = img.width;
-                const h = img.height;
-                
-                const v_x = Math.round(w * 0.25);
-                const v_y = Math.round(h * 0.35);
-                const v_w = Math.round(w * 0.4);
-                const v_h = Math.round(h * 0.45);
-                
-                ctx.strokeStyle = "#ef4444";
-                ctx.lineWidth = Math.max(3, Math.round(w / 200));
-                ctx.strokeRect(v_x, v_y, v_w, v_h);
-                
-                ctx.fillStyle = "#ef4444";
-                const fontSize = Math.max(12, Math.round(w / 40));
-                ctx.fillRect(v_x - 1, v_y - fontSize - 6, v_w + 2, fontSize + 8);
-                
-                ctx.fillStyle = "#ffffff";
-                ctx.font = `bold ${fontSize}px Outfit, sans-serif`;
-                ctx.fillText(`${selectedViolation.toUpperCase()} (AI: 95%)`, v_x + 8, v_y - 6);
-                
-                const p_x = Math.round(v_x + v_w * 0.3);
-                const p_y = Math.round(v_y + v_h * 0.7);
-                const p_w = Math.round(v_w * 0.4);
-                const p_h = Math.round(v_h * 0.15);
-                
-                ctx.strokeStyle = "#10b981";
-                ctx.lineWidth = Math.max(2, Math.round(w / 300));
-                ctx.strokeRect(p_x, p_y, p_w, p_h);
-                
-                ctx.fillStyle = "#10b981";
-                ctx.fillRect(p_x - 1, p_y - fontSize * 0.7 - 4, p_w + 2, fontSize * 0.7 + 5);
-                ctx.fillStyle = "#ffffff";
-                ctx.font = `bold ${Math.round(fontSize * 0.7)}px Outfit, sans-serif`;
-                ctx.fillText("OCR PLATE", p_x + 4, p_y - 4);
-                
-                const dataUrl = canvas.toDataURL("image/jpeg");
-                let data = getMockViolations();
-                const newId = data.length > 0 ? Math.max(...data.map(x => x.id)) + 1 : 1;
-                
-                const newViolation = {
-                    id: newId,
-                    timestamp: new Date().toISOString(),
-                    violation_type: selectedViolation,
-                    vehicle_type: vehicleClasses[selectedViolation],
-                    license_plate: generatedPlate,
-                    confidence: parseFloat((0.85 + Math.random() * 0.12).toFixed(2)),
-                    image_path: uploadedDataUrl,
-                    annotated_image_path: dataUrl,
-                    status: "pending"
-                };
-                
-                data.unshift(newViolation);
-                localStorage.setItem("apic_violations", JSON.stringify(data));
-                
-                const result = {
-                    status: "success",
-                    file: uploadedDataUrl,
-                    annotated_file: dataUrl,
-                    detections_count: 1,
-                    violations_detected: [
-                        {
-                            id: newId,
-                            type: selectedViolation,
-                            vehicle: vehicleClasses[selectedViolation],
-                            plate: generatedPlate,
-                            confidence: newViolation.confidence
-                        }
-                    ],
-                    license_plates: [generatedPlate]
-                };
-                
-                setTimeout(() => {
+                try {
+                    const canvas = document.createElement("canvas");
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext("2d");
+                    
+                    ctx.drawImage(img, 0, 0);
+                    
+                    const violationTypes = [
+                        "Helmet Non-compliance",
+                        "Seatbelt Non-compliance",
+                        "Triple Riding",
+                        "Wrong-side Driving",
+                        "Red-light Violation",
+                        "Illegal Parking"
+                    ];
+                    
+                    let selectedViolation = violationTypes[Math.floor(Math.random() * violationTypes.length)];
+                    if (activeSettings.traffic_light_state === "Red" && Math.random() < 0.6) {
+                        selectedViolation = "Red-light Violation";
+                    }
+                    
+                    const vehicleClasses = {
+                        "Helmet Non-compliance": "motorcycle",
+                        "Seatbelt Non-compliance": "car",
+                        "Triple Riding": "motorcycle",
+                        "Wrong-side Driving": "car",
+                        "Red-light Violation": "car",
+                        "Illegal Parking": "car"
+                    };
+                    
+                    const states = ["DL", "MH", "KA", "HR", "UP", "TN", "AP", "GJ", "WB", "KL"];
+                    const state = states[Math.floor(Math.random() * states.length)];
+                    const letters = String.fromCharCode(65 + Math.floor(Math.random() * 26)) + String.fromCharCode(65 + Math.floor(Math.random() * 26));
+                    const num = Math.floor(1000 + Math.random() * 9000);
+                    const generatedPlate = `${state} ${Math.floor(Math.random()*99).toString().padStart(2, '0')} ${letters} ${num}`;
+                    
+                    const w = img.width;
+                    const h = img.height;
+                    
+                    const v_x = Math.round(w * 0.25);
+                    const v_y = Math.round(h * 0.35);
+                    const v_w = Math.round(w * 0.4);
+                    const v_h = Math.round(h * 0.45);
+                    
+                    ctx.strokeStyle = "#ef4444";
+                    ctx.lineWidth = Math.max(3, Math.round(w / 200));
+                    ctx.strokeRect(v_x, v_y, v_w, v_h);
+                    
+                    ctx.fillStyle = "#ef4444";
+                    const fontSize = Math.max(12, Math.round(w / 40));
+                    ctx.fillRect(v_x - 1, v_y - fontSize - 6, v_w + 2, fontSize + 8);
+                    
+                    ctx.fillStyle = "#ffffff";
+                    ctx.font = `bold ${fontSize}px Outfit, sans-serif`;
+                    ctx.fillText(`${selectedViolation.toUpperCase()} (AI: 95%)`, v_x + 8, v_y - 6);
+                    
+                    const p_x = Math.round(v_x + v_w * 0.3);
+                    const p_y = Math.round(v_y + v_h * 0.7);
+                    const p_w = Math.round(v_w * 0.4);
+                    const p_h = Math.round(v_h * 0.15);
+                    
+                    ctx.strokeStyle = "#10b981";
+                    ctx.lineWidth = Math.max(2, Math.round(w / 300));
+                    ctx.strokeRect(p_x, p_y, p_w, p_h);
+                    
+                    ctx.fillStyle = "#10b981";
+                    ctx.fillRect(p_x - 1, p_y - fontSize * 0.7 - 4, p_w + 2, fontSize * 0.7 + 5);
+                    ctx.fillStyle = "#ffffff";
+                    ctx.font = `bold ${Math.round(fontSize * 0.7)}px Outfit, sans-serif`;
+                    ctx.fillText("OCR PLATE", p_x + 4, p_y - 4);
+                    
+                    const dataUrl = canvas.toDataURL("image/jpeg");
+                    let data = getMockViolations();
+                    const newId = data.length > 0 ? Math.max(...data.map(x => x.id)) + 1 : 1;
+                    
+                    const newViolation = {
+                        id: newId,
+                        timestamp: new Date().toISOString(),
+                        violation_type: selectedViolation,
+                        vehicle_type: vehicleClasses[selectedViolation],
+                        license_plate: generatedPlate,
+                        confidence: parseFloat((0.85 + Math.random() * 0.12).toFixed(2)),
+                        image_path: "uploaded_scene",
+                        annotated_image_path: "uploaded_scene",
+                        status: "pending"
+                    };
+                    
+                    data.unshift(newViolation);
+                    try {
+                        localStorage.setItem("apic_violations", JSON.stringify(data));
+                    } catch (quotaErr) {
+                        console.warn("Could not save custom violation history entry to localStorage quota:", quotaErr);
+                    }
+                    
+                    const result = {
+                        status: "success",
+                        file: uploadedDataUrl,
+                        annotated_file: dataUrl,
+                        detections_count: 1,
+                        violations_detected: [
+                            {
+                                id: newId,
+                                type: selectedViolation,
+                                vehicle: vehicleClasses[selectedViolation],
+                                plate: generatedPlate,
+                                confidence: newViolation.confidence
+                            }
+                        ],
+                        license_plates: [generatedPlate]
+                    };
+                    
+                    setTimeout(() => {
+                        loading.style.display = "none";
+                        document.getElementById("upload-placeholder-view").style.display = "none";
+                        const wrapper = document.getElementById("image-display-view");
+                        wrapper.style.display = "flex";
+                        
+                        const preview = document.getElementById("monitor-preview-img");
+                        preview.src = result.annotated_file;
+                        
+                        renderMonitorResults(result);
+                        loadDashboardData();
+                    }, 1200);
+                } catch (drawErr) {
+                    console.error("Error drawing custom image:", drawErr);
                     loading.style.display = "none";
-                    document.getElementById("upload-placeholder-view").style.display = "none";
-                    const wrapper = document.getElementById("image-display-view");
-                    wrapper.style.display = "flex";
-                    
-                    const preview = document.getElementById("monitor-preview-img");
-                    preview.src = result.annotated_file;
-                    
-                    renderMonitorResults(result);
-                    loadDashboardData();
-                }, 1200);
+                    alert("Failed to analyze image client-side: " + drawErr.message);
+                }
+            };
+            img.onerror = function() {
+                loading.style.display = "none";
+                alert("Failed to load the uploaded image file.");
             };
             img.src = e.target.result;
+        };
+        reader.onerror = function() {
+            loading.style.display = "none";
+            alert("Failed to read the file.");
         };
         reader.readAsDataURL(file);
         return;
