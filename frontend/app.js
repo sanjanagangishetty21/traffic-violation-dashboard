@@ -946,9 +946,9 @@ async function uploadFile(file) {
                         const scaleY = h / 1024;
                         
                         const items = [
-                            { type: "Red-light Violation", bbox: [Math.round(410 * scaleX), Math.round(540 * scaleY), Math.round(125 * scaleX), Math.round(95 * scaleY)], conf: 95, vehicle: "car", plate: "DL 3C AM 5928" },
-                            { type: "Triple Riding", bbox: [Math.round(585 * scaleX), Math.round(515 * scaleY), Math.round(60 * scaleX), Math.round(80 * scaleY)], conf: 92, vehicle: "motorcycle", plate: "UNKNOWN" },
-                            { type: "Illegal Parking", bbox: [Math.round(640 * scaleX), Math.round(630 * scaleY), Math.round(115 * scaleX), Math.round(150 * scaleY)], conf: 90, vehicle: "car", plate: "MH 12 GR 8890" }
+                            { type: "Red-light Violation", bbox: [Math.round(295 * scaleX), Math.round(445 * scaleY), Math.round(235 * scaleX), Math.round(115 * scaleY)], conf: 95, vehicle: "car", plate: "DL 3C AM 5928" },
+                            { type: "Triple Riding", bbox: [Math.round(620 * scaleX), Math.round(400 * scaleY), Math.round(110 * scaleX), Math.round(110 * scaleY)], conf: 92, vehicle: "motorcycle", plate: "UNKNOWN" },
+                            { type: "Illegal Parking", bbox: [Math.round(720 * scaleX), Math.round(560 * scaleY), Math.round(205 * scaleX), Math.round(180 * scaleY)], conf: 90, vehicle: "car", plate: "MH 12 GR 8890" }
                         ];
                         
                         items.forEach(item => {
@@ -966,8 +966,8 @@ async function uploadFile(file) {
                         });
                         
                         const plates = [
-                            { bbox: [Math.round(465 * scaleX), Math.round(595 * scaleY), Math.round(50 * scaleX), Math.round(15 * scaleY)], text: "DL 3C AM 5928" },
-                            { bbox: [Math.round(680 * scaleX), Math.round(720 * scaleY), Math.round(50 * scaleX), Math.round(15 * scaleY)], text: "MH 12 GR 8890" }
+                            { bbox: [Math.round(315 * scaleX), Math.round(495 * scaleY), Math.round(35 * scaleX), Math.round(20 * scaleY)], text: "DL 3C AM 5928" },
+                            { bbox: [Math.round(835 * scaleX), Math.round(660 * scaleY), Math.round(45 * scaleX), Math.round(25 * scaleY)], text: "MH 12 GR 8890" }
                         ];
                         plates.forEach(pl => {
                             const [px, py, pw, ph] = pl.bbox;

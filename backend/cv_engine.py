@@ -561,18 +561,18 @@ class TrafficCVEngine:
         
         if is_demo_scene:
             detections = [
-                {"class": "car", "confidence": 0.95, "bbox": [410, 540, 125, 95]},
-                {"class": "motorcycle", "confidence": 0.92, "bbox": [585, 515, 60, 80]},
-                {"class": "car", "confidence": 0.90, "bbox": [640, 630, 115, 150]}
+                {"class": "car", "confidence": 0.95, "bbox": [295, 445, 235, 115]},
+                {"class": "motorcycle", "confidence": 0.92, "bbox": [620, 400, 110, 110]},
+                {"class": "car", "confidence": 0.90, "bbox": [720, 560, 205, 180]}
             ]
             violations = [
-                {"type": "Red-light Violation", "confidence": 0.95, "target_bbox": [410, 540, 125, 95], "details": "Sedan crossed stop-line during RED signal state."},
-                {"type": "Triple Riding", "confidence": 0.92, "target_bbox": [585, 515, 60, 80], "details": "Detected 3 riders on a single motorcycle."},
-                {"type": "Illegal Parking", "confidence": 0.90, "target_bbox": [640, 630, 115, 150], "details": "Vehicle stationary inside No Parking boundary."}
+                {"type": "Red-light Violation", "confidence": 0.95, "target_bbox": [295, 445, 235, 115], "details": "Sedan crossed stop-line during RED signal state."},
+                {"type": "Triple Riding", "confidence": 0.92, "target_bbox": [620, 400, 110, 110], "details": "Detected 3 riders on a single motorcycle."},
+                {"type": "Illegal Parking", "confidence": 0.90, "target_bbox": [720, 560, 205, 180], "details": "Vehicle stationary inside No Parking boundary."}
             ]
             plates_info = [
-                {"bbox": [465, 595, 50, 15], "text": "DL 3C AM 5928", "confidence": 0.98},
-                {"bbox": [680, 720, 50, 15], "text": "MH 12 GR 8890", "confidence": 0.97}
+                {"bbox": [315, 495, 35, 20], "text": "DL 3C AM 5928", "confidence": 0.98},
+                {"bbox": [835, 660, 45, 25], "text": "MH 12 GR 8890", "confidence": 0.97}
             ]
             
             annotated_image = processed_image.copy()
