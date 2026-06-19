@@ -456,6 +456,15 @@
 
                     <div class="settings-workspace glass">
                         <div class="settings-toolbar">
+                            <div class="camera-select-control" style="display: flex; align-items: center; gap: 8px; font-size: 13px;">
+                                <label><i class="fa-solid fa-video"></i> Active Camera:</label>
+                                <select id="settings-camera-select" class="form-select">
+                                    <option value="cam_01">Camera #01 - North Intersection</option>
+                                    <option value="cam_02">Camera #02 - South Avenue</option>
+                                    <option value="cam_03">Camera #03 - East Highway</option>
+                                </select>
+                            </div>
+
                             <div class="tool-select">
                                 <button class="btn btn-sm btn-outline active" data-tool="stop_line">
                                     <i class="fa-solid fa-slash"></i> Draw Stop Line
@@ -572,6 +581,9 @@
             </div>
         </div>
     </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container"></div>
 
     <!-- Core App logic -->
     <script src="app.js"></script>

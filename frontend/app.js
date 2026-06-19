@@ -9,13 +9,31 @@ let historyLimit = 10;
 let activeTool = "stop_line"; // stop_line, no_parking
 
 // Active settings loaded from server
-let activeSettings = {
-    stop_line: { start: [100, 420], end: [700, 420] },
-    no_parking_zone: [[100, 450], [350, 450], [300, 580], [50, 580]],
-    traffic_light_state: "Red",
-    traffic_light_zone: { x: 695, y: 100, width: 40, height: 120 },
-    lane_directions: { lane1: "North", lane2: "South" }
+let currentCamera = "cam_01";
+let cameraSettingsDb = {
+    cam_01: {
+        stop_line: { start: [100, 420], end: [700, 420] },
+        no_parking_zone: [[100, 450], [350, 450], [300, 580], [50, 580]],
+        traffic_light_state: "Red",
+        traffic_light_zone: { x: 695, y: 100, width: 40, height: 120 },
+        lane_directions: { lane1: "North", lane2: "South" }
+    },
+    cam_02: {
+        stop_line: { start: [250, 380], end: [550, 380] },
+        no_parking_zone: [[300, 100], [500, 100], [500, 200], [300, 200]],
+        traffic_light_state: "Green",
+        traffic_light_zone: { x: 570, y: 80, width: 40, height: 120 },
+        lane_directions: { lane1: "East", lane2: "West" }
+    },
+    cam_03: {
+        stop_line: { start: [150, 450], end: [650, 450] },
+        no_parking_zone: [[50, 480], [280, 480], [220, 590], [20, 590]],
+        traffic_light_state: "Red",
+        traffic_light_zone: { x: 680, y: 120, width: 40, height: 120 },
+        lane_directions: { lane1: "North-West", lane2: "South-East" }
+    }
 };
+let activeSettings = cameraSettingsDb[currentCamera];
 
 // Canvas drawing state
 let canvas, ctx;
@@ -772,25 +790,38 @@ async function loadAnalyticsData() {
 
 async function loadSettings() {
     if (isBrowserDemoMode) {
-        let localSettings = localStorage.getItem("apic_settings");
-        if (localSettings) {
-            activeSettings = JSON.parse(localSettings);
+        let localDb = localStorage.getItem("apic_camera_settings_db");
+        if (localDb) {
+            cameraSettingsDb = JSON.parse(localDb);
         } else {
-            localStorage.setItem("apic_settings", JSON.stringify(activeSettings));
+            localStorage.setItem("apic_camera_settings_db", JSON.stringify(cameraSettingsDb));
         }
-        document.getElementById("settings-light-state").value = activeSettings.traffic_light_state;
-        document.getElementById("monitor-light-badge").textContent = activeSettings.traffic_light_state;
-        document.getElementById("monitor-light-badge").className = `badge ${activeSettings.traffic_light_state === 'Red' ? 'red' : 'green'}`;
+        activeSettings = cameraSettingsDb[currentCamera];
+        updateSettingsUI();
         return;
     }
     try {
         const res = await fetch(`${API_BASE}/settings`);
-        activeSettings = await res.json();
-        document.getElementById("settings-light-state").value = activeSettings.traffic_light_state;
-        document.getElementById("monitor-light-badge").textContent = activeSettings.traffic_light_state;
-        document.getElementById("monitor-light-badge").className = `badge ${activeSettings.traffic_light_state === 'Red' ? 'red' : 'green'}`;
+        const serverSettings = await res.json();
+        // Sync active camera settings with server
+        cameraSettingsDb[currentCamera] = serverSettings;
+        activeSettings = serverSettings;
+        updateSettingsUI();
     } catch (err) {
         console.error("Error loading settings:", err);
+    }
+}
+
+function updateSettingsUI() {
+    if (!activeSettings) return;
+    document.getElementById("settings-light-state").value = activeSettings.traffic_light_state;
+    document.getElementById("monitor-light-badge").textContent = activeSettings.traffic_light_state;
+    document.getElementById("monitor-light-badge").className = `badge ${activeSettings.traffic_light_state === 'Red' ? 'red' : 'green'}`;
+    
+    // Sync the settings camera selector dropdown
+    const camSelect = document.getElementById("settings-camera-select");
+    if (camSelect && camSelect.value !== currentCamera) {
+        camSelect.value = currentCamera;
     }
 }
 
@@ -1019,18 +1050,18 @@ async function uploadFile(file) {
                 } catch (drawErr) {
                     console.error("Error drawing custom image:", drawErr);
                     loading.style.display = "none";
-                    alert("Failed to analyze image client-side: " + drawErr.message);
+                    showToast("Failed to analyze image client-side: " + drawErr.message, "error");
                 }
             };
             img.onerror = function() {
                 loading.style.display = "none";
-                alert("Failed to load the uploaded image file.");
+                showToast("Failed to load the uploaded image file.", "error");
             };
             img.src = e.target.result;
         };
         reader.onerror = function() {
             loading.style.display = "none";
-            alert("Failed to read the file.");
+            showToast("Failed to read the file.", "error");
         };
         reader.readAsDataURL(file);
         return;
@@ -1063,13 +1094,14 @@ async function uploadFile(file) {
             // Render results sidebar
             renderMonitorResults(result);
             
+            showToast("Frame analysis completed successfully!", "success");
         } else {
-            alert(`Error processing frame: ${result.message}`);
+            showToast(`Error processing frame: ${result.message}`, "error");
         }
     } catch (err) {
         loading.style.display = "none";
         console.error("File upload failed:", err);
-        alert("Server connection failed. Make sure FastAPI server is running.");
+        showToast("Server connection failed. Make sure FastAPI server is running.", "error");
     }
 }
 
@@ -1196,14 +1228,14 @@ document.getElementById("btn-run-evaluation").addEventListener("click", async ()
             document.getElementById("matrix-fn").textContent = metrics.false_negatives;
             
         } else {
-            alert(`Evaluation error: ${metrics.message}`);
+            showToast(`Evaluation error: ${metrics.message}`, "error");
         }
         
     } catch (err) {
         runBtn.disabled = false;
         runBtn.innerHTML = `<i class="fa-solid fa-circle-play"></i> Run Validation Suite`;
         console.error("Evaluation failed:", err);
-        alert("Could not load validation. Verify the test set dataset path exists in data/test folder.");
+        showToast("Could not load validation test split.", "error");
     }
 });
 
@@ -1224,6 +1256,22 @@ function setupCanvasControls() {
             }
         });
     });
+
+    // Camera Selector Switch
+    const cameraSelect = document.getElementById("settings-camera-select");
+    if (cameraSelect) {
+        cameraSelect.addEventListener("change", (e) => {
+            // Save active to DB before switching
+            cameraSettingsDb[currentCamera] = { ...activeSettings };
+            
+            currentCamera = e.target.value;
+            activeSettings = cameraSettingsDb[currentCamera];
+            
+            updateSettingsUI();
+            drawSettingsCanvas();
+            showToast(`Switched focus to Camera #${currentCamera.split('_')[1]} calibration`, "info");
+        });
+    }
     
     // Light toggle simulation
     document.getElementById("settings-light-state").addEventListener("change", (e) => {
@@ -1233,17 +1281,11 @@ function setupCanvasControls() {
     
     // Save Settings
     document.getElementById("btn-save-settings").addEventListener("click", async () => {
-        const payload = {
-            stop_line: activeSettings.stop_line,
-            traffic_light_zone: activeSettings.traffic_light_zone,
-            no_parking_zone: activeSettings.no_parking_zone,
-            traffic_light_state: activeSettings.traffic_light_state,
-            lane_directions: activeSettings.lane_directions
-        };
+        cameraSettingsDb[currentCamera] = { ...activeSettings };
         
         if (isBrowserDemoMode) {
-            localStorage.setItem("apic_settings", JSON.stringify(payload));
-            alert("Junction configuration settings saved successfully (Demo Mode)!");
+            localStorage.setItem("apic_camera_settings_db", JSON.stringify(cameraSettingsDb));
+            showToast(`Camera #${currentCamera.split('_')[1]} calibrations saved!`, "success");
             loadSettings();
             return;
         }
@@ -1252,16 +1294,17 @@ function setupCanvasControls() {
             const res = await fetch(`${API_BASE}/settings`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload)
+                body: JSON.stringify(activeSettings)
             });
             const result = await res.json();
             if (result.status === "success") {
-                alert("Junction configuration settings saved successfully!");
+                localStorage.setItem("apic_camera_settings_db", JSON.stringify(cameraSettingsDb));
+                showToast("Calibrations synchronized with FastAPI server!", "success");
                 loadSettings(); // Reload
             }
         } catch (err) {
             console.error("Save settings failed:", err);
-            alert("Error saving settings.");
+            showToast("Failed to save settings to server.", "error");
         }
     });
 }
@@ -1287,19 +1330,51 @@ function drawSettingsCanvas() {
     ctx.fillStyle = "#1e293b";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    // Draw simplified grid representing streets
-    ctx.fillStyle = "#64748b";
-    ctx.fillRect(100, 0, 600, 600); // Main road
+    // Draw simplified grid representing streets based on current camera
+    ctx.fillStyle = "#475569";
     
-    // Lanes
-    ctx.strokeStyle = "#ffffff";
-    ctx.lineWidth = 4;
-    ctx.beginPath();
-    ctx.setLineDash([15, 15]);
-    ctx.moveTo(400, 0);
-    ctx.lineTo(400, 600);
-    ctx.stroke();
-    ctx.setLineDash([]); // Reset
+    if (currentCamera === "cam_01") {
+        // Straight vertical road
+        ctx.fillRect(100, 0, 600, 600);
+        
+        // Lanes
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.setLineDash([15, 15]);
+        ctx.moveTo(400, 0);
+        ctx.lineTo(400, 600);
+        ctx.stroke();
+        ctx.setLineDash([]);
+    } else if (currentCamera === "cam_02") {
+        // T-Intersection/Crossroad
+        ctx.fillRect(250, 0, 300, 600); // Vertical road
+        ctx.fillRect(0, 150, 800, 300); // Horizontal crossroad
+        
+        // Center intersection markings
+        ctx.strokeStyle = "rgba(255,255,255,0.3)";
+        ctx.lineWidth = 3;
+        ctx.strokeRect(250, 150, 300, 300);
+    } else {
+        // Diagonal split highway
+        ctx.beginPath();
+        ctx.moveTo(50, 0);
+        ctx.lineTo(650, 600);
+        ctx.lineTo(800, 600);
+        ctx.lineTo(200, 0);
+        ctx.closePath();
+        ctx.fill();
+        
+        // Lane divisor
+        ctx.strokeStyle = "#fbbf24"; // Yellow lines
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.setLineDash([15, 10]);
+        ctx.moveTo(125, 0);
+        ctx.lineTo(725, 600);
+        ctx.stroke();
+        ctx.setLineDash([]);
+    }
     
     // Draw calibrated stop line
     if (activeSettings.stop_line) {
@@ -1573,7 +1648,7 @@ function getFineAmount(violationType) {
 function printCitationNotice(item) {
     const printWindow = window.open('', '_blank', 'width=850,height=900');
     if (!printWindow) {
-        alert("Pop-up blocker is enabled! Please allow pop-ups for this website to print citations.");
+        showToast("Pop-up blocker is enabled! Please allow pop-ups to print citations.", "error");
         return;
     }
     
