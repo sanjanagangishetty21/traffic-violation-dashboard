@@ -491,6 +491,10 @@ document.addEventListener("DOMContentLoaded", () => {
     
     // 8. Filters in history
     setupHistoryFilters();
+
+    // 9. Payment routing & event handlers
+    setupPaymentGatewayHandlers();
+    checkPaymentGatewayRoute();
 });
 
 // --- ROUTING / VIEW NAVIGATION ---
@@ -1611,11 +1615,15 @@ function updateModalViewForStatus(item) {
         citationSection.style.display = "flex";
         
         // Dynamic official payment QR code pointing to current site instance
-        let portalUrl = window.location.origin;
-        if (portalUrl.includes("localhost") || portalUrl.includes("127.0.0.1") || portalUrl.startsWith("file:")) {
-            portalUrl = "https://traffic-violation-dashboard.vercel.app";
+        let portalUrl = window.location.origin + window.location.pathname;
+        if (portalUrl.includes("localhost") || portalUrl.includes("127.0.0.1") || window.location.protocol === "file:") {
+            portalUrl = "https://traffic-violation-dashboard.vercel.app/";
         }
-        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&color=0f172a&data=${encodeURIComponent(portalUrl)}`;
+        if (!portalUrl.endsWith('/') && !portalUrl.endsWith('index.html')) {
+            portalUrl += '/';
+        }
+        const paymentUrl = `${portalUrl}?pay=true&id=${item.id}&type=${encodeURIComponent(item.violation_type)}&plate=${encodeURIComponent(item.license_plate)}&fine=${encodeURIComponent(getFineAmount(item.violation_type))}`;
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&color=0f172a&data=${encodeURIComponent(paymentUrl)}`;
     } else if (item.status === "rejected") {
         reviewSection.style.display = "none";
         citationSection.style.display = "none";
@@ -1661,11 +1669,15 @@ function printCitationNotice(item) {
             : `${window.location.origin}${item.annotated_image_path}`;
     }
     
-    let portalUrl = window.location.origin;
-    if (portalUrl.includes("localhost") || portalUrl.includes("127.0.0.1") || portalUrl.startsWith("file:")) {
-        portalUrl = "https://traffic-violation-dashboard.vercel.app";
+    let portalUrl = window.location.origin + window.location.pathname;
+    if (portalUrl.includes("localhost") || portalUrl.includes("127.0.0.1") || window.location.protocol === "file:") {
+        portalUrl = "https://traffic-violation-dashboard.vercel.app/";
     }
-    const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&color=000000&data=${encodeURIComponent(portalUrl)}`;
+    if (!portalUrl.endsWith('/') && !portalUrl.endsWith('index.html')) {
+        portalUrl += '/';
+    }
+    const paymentUrl = `${portalUrl}?pay=true&id=${item.id}&type=${encodeURIComponent(item.violation_type)}&plate=${encodeURIComponent(item.license_plate)}&fine=${encodeURIComponent(getFineAmount(item.violation_type))}`;
+    const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&color=000000&data=${encodeURIComponent(paymentUrl)}`;
     const fineAmount = getFineAmount(item.violation_type);
     
     printWindow.document.write(`
@@ -2341,4 +2353,210 @@ function playToastSound(type) {
     } catch (e) {
         console.warn("AudioContext block by browser auto-play policy:", e);
     }
+}
+
+// --- CITIZEN PAYMENT GATEWAY ROUTING & CONTROLLER ---
+
+function checkPaymentGatewayRoute() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("pay") === "true") {
+        const id = urlParams.get("id");
+        const type = urlParams.get("type");
+        const plate = urlParams.get("plate");
+        const fine = urlParams.get("fine");
+        
+        if (id && type && plate && fine) {
+            openPaymentGateway({
+                id: id,
+                violation_type: decodeURIComponent(type),
+                license_plate: decodeURIComponent(plate),
+                fine_amount: decodeURIComponent(fine)
+            });
+        }
+    }
+}
+
+function openPaymentGateway(details) {
+    document.getElementById("pay-citation-id").textContent = `APIC-TV-2026-${details.id}`;
+    
+    const typeBadge = document.getElementById("pay-violation-type");
+    typeBadge.textContent = details.violation_type;
+    // Set appropriate badge class
+    typeBadge.className = `badge ${getViolationBadgeClass(details.violation_type)}`;
+    
+    document.getElementById("pay-license-plate").textContent = details.license_plate;
+    document.getElementById("pay-fine-amount").textContent = details.fine_amount;
+    
+    // Create dynamic UPI scan QR link
+    const cleanFineVal = parseInt(details.fine_amount.replace(/[^0-9]/g, '')) || 1000;
+    const upiUrl = `upi://pay?pa=citations@nexorax.gov&pn=APIC-TV&am=${cleanFineVal}&cu=INR&tn=APIC-TV-2026-${details.id}`;
+    document.getElementById("upi-qr-image").src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&color=0f172a&data=${encodeURIComponent(upiUrl)}`;
+    
+    // Reset views and forms
+    document.getElementById("payment-success-view").style.display = "none";
+    document.getElementById("payment-loading-view").style.display = "none";
+    document.getElementById("payment-card-form").reset();
+    
+    switchPaymentMethod("card");
+    
+    // Open gateway overlay
+    document.getElementById("payment-gateway-modal").style.display = "flex";
+}
+
+function setupPaymentGatewayHandlers() {
+    // Close button
+    const closeBtn = document.getElementById("btn-close-payment");
+    if (closeBtn) {
+        closeBtn.addEventListener("click", () => {
+            document.getElementById("payment-gateway-modal").style.display = "none";
+            // Clear URL search params
+            const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            window.history.replaceState({ path: cleanUrl }, '', cleanUrl);
+        });
+    }
+    
+    // Close success button
+    const closeSuccessBtn = document.getElementById("btn-close-payment-success");
+    if (closeSuccessBtn) {
+        closeSuccessBtn.addEventListener("click", () => {
+            document.getElementById("payment-gateway-modal").style.display = "none";
+            // Clear URL search params
+            const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            window.history.replaceState({ path: cleanUrl }, '', cleanUrl);
+        });
+    }
+    
+    // Tab selectors
+    const tabs = document.querySelectorAll(".payment-methods-tabs .method-tab");
+    tabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+            const method = tab.getAttribute("data-method");
+            switchPaymentMethod(method);
+        });
+    });
+    
+    // Card formatting input handlers
+    const cardNum = document.getElementById("pay-card-num");
+    if (cardNum) {
+        cardNum.addEventListener("input", (e) => {
+            let val = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+            let formatted = "";
+            for (let i = 0; i < val.length; i++) {
+                if (i > 0 && i % 4 === 0) formatted += " ";
+                formatted += val[i];
+            }
+            e.target.value = formatted;
+        });
+    }
+    
+    const cardExpiry = document.getElementById("pay-card-expiry");
+    if (cardExpiry) {
+        cardExpiry.addEventListener("input", (e) => {
+            let val = e.target.value.replace(/\//g, '').replace(/[^0-9]/gi, '');
+            if (val.length > 2) {
+                e.target.value = val.substring(0, 2) + "/" + val.substring(2, 4);
+            } else {
+                e.target.value = val;
+            }
+        });
+    }
+    
+    const cardCvv = document.getElementById("pay-card-cvv");
+    if (cardCvv) {
+        cardCvv.addEventListener("input", (e) => {
+            e.target.value = e.target.value.replace(/[^0-9]/gi, '');
+        });
+    }
+    
+    // Submit payment form
+    const cardForm = document.getElementById("payment-card-form");
+    if (cardForm) {
+        cardForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            triggerPaymentSettlement("Credit/Debit Card");
+        });
+    }
+    
+    // UPI Paid confirmation trigger
+    const upiPaidBtn = document.getElementById("btn-upi-success");
+    if (upiPaidBtn) {
+        upiPaidBtn.addEventListener("click", () => {
+            triggerPaymentSettlement("UPI Application");
+        });
+    }
+}
+
+function switchPaymentMethod(method) {
+    const tabs = document.querySelectorAll(".payment-methods-tabs .method-tab");
+    tabs.forEach(t => {
+        if (t.getAttribute("data-method") === method) {
+            t.classList.add("active");
+        } else {
+            t.classList.remove("active");
+        }
+    });
+    
+    const cardSection = document.getElementById("method-details-card");
+    const upiSection = document.getElementById("method-details-upi");
+    
+    if (method === "card") {
+        cardSection.style.display = "block";
+        upiSection.style.display = "none";
+    } else {
+        cardSection.style.display = "none";
+        upiSection.style.display = "block";
+    }
+}
+
+function triggerPaymentSettlement(methodName) {
+    const loadingView = document.getElementById("payment-loading-view");
+    const successView = document.getElementById("payment-success-view");
+    
+    loadingView.style.display = "flex";
+    document.getElementById("loading-pay-text").textContent = `Authorizing payment transaction with secure gateway...`;
+    
+    setTimeout(() => {
+        // Change status of item in DB/localStorage
+        const citationIdStr = document.getElementById("pay-citation-id").textContent;
+        const ticketId = parseInt(citationIdStr.replace("APIC-TV-2026-", ""));
+        
+        settleTicketPaymentLocal(ticketId);
+        
+        loadingView.style.display = "none";
+        successView.style.display = "flex";
+        
+        const txnId = "TXN-" + Math.floor(10000000 + Math.random() * 90000000);
+        document.getElementById("success-tx-id").textContent = txnId;
+        
+        showToast(`Penalty settled via ${methodName}! Transaction ID: ${txnId}`, "success");
+    }, 2000);
+}
+
+async function settleTicketPaymentLocal(ticketId) {
+    // 1. LocalStorage Sync
+    let data = getMockViolations();
+    data = data.map(item => {
+        if (item.id === ticketId) {
+            item.status = "approved"; // keep as approved but logs show paid
+        }
+        return item;
+    });
+    localStorage.setItem("apic_violations", JSON.stringify(data));
+    
+    // 2. Server status sync if not in static/offline demo mode
+    if (!isBrowserDemoMode) {
+        try {
+            await fetch(`${API_BASE}/violations/${ticketId}/status`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: "approved" })
+            });
+        } catch (e) {
+            console.warn("Could not sync settlement status with FastAPI backend server:", e);
+        }
+    }
+    
+    // 3. UI panel refresh
+    if (currentTab === "dashboard") loadDashboardData();
+    else if (currentTab === "history") loadHistoryData(document.getElementById("filter-search-input").value, historyPage);
 }

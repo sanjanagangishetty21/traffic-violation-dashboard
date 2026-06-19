@@ -582,6 +582,110 @@
         </div>
     </div>
 
+    <!-- Citizen Payment Gateway Overlay -->
+    <div class="modal-overlay" id="payment-gateway-modal" style="display: none;">
+        <div class="payment-card glass">
+            <div class="payment-header">
+                <h3><i class="fa-solid fa-shield-halved"></i> APIC-TV Secure Payment Gateway</h3>
+                <button class="modal-close" id="btn-close-payment"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="payment-body">
+                <div class="payment-receipt-summary">
+                    <h4>Citation Receipt Summary</h4>
+                    <div class="receipt-row">
+                        <span>Citation Reference:</span>
+                        <strong id="pay-citation-id">APIC-TV-2026-000</strong>
+                    </div>
+                    <div class="receipt-row">
+                        <span>Violation Category:</span>
+                        <span id="pay-violation-type" class="badge badge-red">-</span>
+                    </div>
+                    <div class="receipt-row">
+                        <span>Vehicle License Plate:</span>
+                        <strong id="pay-license-plate">-</strong>
+                    </div>
+                    <div class="receipt-row total">
+                        <span>Fine Amount Due:</span>
+                        <span id="pay-fine-amount" class="pay-amount-text">-</span>
+                    </div>
+                </div>
+
+                <div class="payment-methods-tabs">
+                    <div class="method-tab active" data-method="card">
+                        <i class="fa-regular fa-credit-card"></i> Credit / Debit Card
+                    </div>
+                    <div class="method-tab" data-method="upi">
+                        <i class="fa-solid fa-mobile-screen-button"></i> UPI / QR Code
+                    </div>
+                </div>
+
+                <!-- Card Method Details -->
+                <div class="payment-method-details" id="method-details-card">
+                    <form id="payment-card-form" onsubmit="event.preventDefault();">
+                        <div class="form-group-pay">
+                            <label for="pay-card-num">Card Number</label>
+                            <input type="text" id="pay-card-num" placeholder="4111 2222 3333 4444" maxlength="19" required>
+                        </div>
+                        <div class="form-row-pay">
+                            <div class="form-group-pay">
+                                <label for="pay-card-expiry">Expiry Date</label>
+                                <input type="text" id="pay-card-expiry" placeholder="MM/YY" maxlength="5" required>
+                            </div>
+                            <div class="form-group-pay">
+                                <label for="pay-card-cvv">CVV</label>
+                                <input type="password" id="pay-card-cvv" placeholder="•••" maxlength="3" required>
+                            </div>
+                        </div>
+                        <div class="form-group-pay">
+                            <label for="pay-card-name">Cardholder Name</label>
+                            <input type="text" id="pay-card-name" placeholder="John Doe" required>
+                        </div>
+                        
+                        <button class="btn btn-success pay-btn" id="btn-submit-payment">
+                            <i class="fa-solid fa-lock"></i> Settle Penalty Fine
+                        </button>
+                    </form>
+                </div>
+
+                <!-- UPI Method Details -->
+                <div class="payment-method-details" id="method-details-upi" style="display: none;">
+                    <div class="upi-pay-container" style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; padding: 10px 0;">
+                        <img id="upi-qr-image" src="" alt="UPI Scan QR" style="width: 130px; height: 130px; background: white; padding: 8px; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
+                        <p style="font-size: 11px; color: var(--text-secondary); line-height: 1.4; max-width: 250px;">
+                            Scan this dynamic UPI QR Code with Google Pay, PhonePe, Paytm, or BHIM to pay the penalty.
+                        </p>
+                        <button class="btn btn-outline pay-btn-sm" id="btn-upi-success" style="width: 100%; max-width: 200px;">
+                            <i class="fa-solid fa-circle-check"></i> I have paid the fine
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Success State Overlay -->
+                <div class="payment-success-overlay" id="payment-success-view" style="display: none;">
+                    <i class="fa-solid fa-circle-check success-icon-large"></i>
+                    <h3>Citation Settled Successfully!</h3>
+                    <p id="success-receipt-desc">
+                        A transaction receipt has been dispatched to the vehicle owner.
+                    </p>
+                    <div class="receipt-details">
+                        <span>Transaction ID:</span>
+                        <strong id="success-tx-id">TXN-000000</strong>
+                    </div>
+                    <button class="btn btn-primary" id="btn-close-payment-success" style="width: 100%;">
+                        Return to Portal
+                    </button>
+                </div>
+
+                <!-- Loading State Overlay -->
+                <div class="payment-loading-overlay" id="payment-loading-view" style="display: none;">
+                    <div class="spinner"></div>
+                    <p id="loading-pay-text">Authorizing payment transaction with secure gateway...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Notification Container -->
     <div id="toast-container" class="toast-container"></div>
 

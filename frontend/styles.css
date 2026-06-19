@@ -1818,3 +1818,244 @@ body.light-theme .toast {
     }
 }
 
+/* ==========================================================================
+   Citizen Payment Gateway Styles
+   ========================================================================== */
+
+.payment-card {
+    width: 500px;
+    max-width: 100%;
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: relative;
+    overflow: hidden;
+    animation: fadeIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+.payment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 14px;
+}
+
+.payment-header h3 {
+    font-size: 16px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.payment-header h3 i {
+    color: var(--primary);
+    filter: drop-shadow(0 0 4px var(--primary-glow));
+}
+
+.payment-body {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.payment-receipt-summary {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+body.light-theme .payment-receipt-summary {
+    background: rgba(0, 0, 0, 0.01);
+}
+
+.payment-receipt-summary h4 {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.receipt-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+}
+
+.receipt-row span {
+    color: var(--text-secondary);
+}
+
+.receipt-row.total {
+    border-top: 1px solid var(--border-color);
+    padding-top: 10px;
+    margin-top: 4px;
+}
+
+.receipt-row.total span {
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.pay-amount-text {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--success);
+    filter: drop-shadow(0 0 6px var(--success-glow));
+}
+
+.payment-methods-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    gap: 16px;
+}
+
+.method-tab {
+    padding: 10px 4px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: var(--transition-smooth);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.method-tab:hover, .method-tab.active {
+    color: var(--text-primary);
+}
+
+.method-tab.active {
+    border-bottom-color: var(--primary);
+}
+
+.form-group-pay {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+}
+
+.form-row-pay {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.form-group-pay label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+}
+
+.form-group-pay input {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 14px;
+    color: var(--text-primary);
+    outline: none;
+    transition: var(--transition-smooth);
+}
+
+body.light-theme .form-group-pay input {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.form-group-pay input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 8px var(--primary-glow);
+}
+
+.pay-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    margin-top: 10px;
+}
+
+.pay-btn-sm {
+    padding: 8px 16px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.payment-success-overlay, .payment-loading-overlay {
+    position: absolute;
+    inset: 0;
+    background: var(--bg-primary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 32px;
+    text-align: center;
+    z-index: 10;
+    animation: fadeIn 0.3s ease;
+}
+
+.success-icon-large {
+    font-size: 54px;
+    color: var(--success);
+    filter: drop-shadow(0 0 10px var(--success-glow));
+    animation: bounce 2s infinite;
+}
+
+.payment-success-overlay h3 {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.payment-success-overlay p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    max-width: 320px;
+}
+
+.receipt-details {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 12px;
+    width: 100%;
+    margin-bottom: 12px;
+}
+
+body.light-theme .receipt-details {
+    background: rgba(0, 0, 0, 0.01);
+}
+
+.receipt-details span {
+    color: var(--text-secondary);
+}
+
+.receipt-details strong {
+    font-size: 14px;
+    font-family: monospace;
+    letter-spacing: 0.5px;
+}
+
+
