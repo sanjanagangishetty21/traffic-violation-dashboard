@@ -1473,6 +1473,7 @@ function setupHistoryFilters() {
 
 // --- EVIDENCE MODAL ACTION ---
 let currentActiveModalId = null;
+let currentActiveItem = null;
 
 function setupModalHandlers() {
     document.getElementById("btn-close-modal").addEventListener("click", () => {
@@ -1486,10 +1487,17 @@ function setupModalHandlers() {
     document.getElementById("btn-modal-reject").addEventListener("click", () => {
         updateViolationReviewStatus(currentActiveModalId, "rejected");
     });
+
+    document.getElementById("btn-print-citation").addEventListener("click", () => {
+        if (currentActiveItem) {
+            printCitationNotice(currentActiveItem);
+        }
+    });
 }
 
 function openEvidenceModal(item) {
     currentActiveModalId = item.id;
+    currentActiveItem = item;
     
     document.getElementById("modal-violation-id").textContent = item.id;
     document.getElementById("modal-timestamp").textContent = formatTimestamp(item.timestamp);
@@ -1507,28 +1515,370 @@ function openEvidenceModal(item) {
         document.getElementById("modal-original-img").src = generateTrafficScene(item.violation_type, false, item.license_plate);
         document.getElementById("modal-annotated-img").src = generateTrafficScene(item.violation_type, true, item.license_plate);
     } else {
-        document.getElementById("modal-original-img").src = origUrl;
-        document.getElementById("modal-annotated-img").src = annUrl;
+        document.getElementById("modal-original-img").src = origUrl.startsWith('http') ? origUrl : `${window.location.origin}${origUrl}`;
+        document.getElementById("modal-annotated-img").src = annUrl.startsWith('http') ? annUrl : `${window.location.origin}${annUrl}`;
     }
     
+    // Update review / print views based on status
+    updateModalViewForStatus(item);
+
     // Open overlay
     document.getElementById("violation-modal").style.display = "flex";
+}
+
+function updateModalViewForStatus(item) {
+    const reviewSection = document.getElementById("modal-review-section");
+    const citationSection = document.getElementById("modal-citation-section");
+    const qrImg = document.getElementById("citation-qr-code");
+    
+    if (item.status === "approved") {
+        reviewSection.style.display = "none";
+        citationSection.style.display = "flex";
+        
+        // Dynamic official payment QR code pointing to current site instance
+        let portalUrl = window.location.origin;
+        if (portalUrl.includes("localhost") || portalUrl.includes("127.0.0.1") || portalUrl.startsWith("file:")) {
+            portalUrl = "https://traffic-violation-dashboard.vercel.app";
+        }
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&color=0f172a&data=${encodeURIComponent(portalUrl)}`;
+    } else if (item.status === "rejected") {
+        reviewSection.style.display = "none";
+        citationSection.style.display = "none";
+    } else {
+        // pending
+        reviewSection.style.display = "block";
+        citationSection.style.display = "none";
+    }
+}
+
+function getFineAmount(violationType) {
+    switch (violationType) {
+        case "Helmet Non-compliance":
+            return "₹1,000 / $50";
+        case "Seatbelt Non-compliance":
+            return "₹1,000 / $50";
+        case "Triple Riding":
+            return "₹2,000 / $100";
+        case "Wrong-side Driving":
+            return "₹5,000 / $250";
+        case "Red-light Violation":
+            return "₹5,000 / $250";
+        case "Illegal Parking":
+            return "₹500 / $25";
+        default:
+            return "₹1,000 / $50";
+    }
+}
+
+function printCitationNotice(item) {
+    const printWindow = window.open('', '_blank', 'width=850,height=900');
+    if (!printWindow) {
+        alert("Pop-up blocker is enabled! Please allow pop-ups for this website to print citations.");
+        return;
+    }
+    
+    let imageSrc = "";
+    if (isBrowserDemoMode) {
+        imageSrc = generateTrafficScene(item.violation_type, true, item.license_plate);
+    } else {
+        imageSrc = item.annotated_image_path.startsWith('http') 
+            ? item.annotated_image_path 
+            : `${window.location.origin}${item.annotated_image_path}`;
+    }
+    
+    let portalUrl = window.location.origin;
+    if (portalUrl.includes("localhost") || portalUrl.includes("127.0.0.1") || portalUrl.startsWith("file:")) {
+        portalUrl = "https://traffic-violation-dashboard.vercel.app";
+    }
+    const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&color=000000&data=${encodeURIComponent(portalUrl)}`;
+    const fineAmount = getFineAmount(item.violation_type);
+    
+    printWindow.document.write(`
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Official Traffic Citation #${item.id}</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            color: #000000;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 30px;
+            line-height: 1.4;
+        }
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+            border-bottom: 3px double #000000;
+            padding-bottom: 10px;
+        }
+        .header-logo-text {
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: #000000;
+            margin: 0;
+            text-transform: uppercase;
+        }
+        .header-subtext {
+            font-size: 11px;
+            font-weight: 600;
+            color: #333333;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin: 2px 0 0 0;
+        }
+        .authority-details {
+            text-align: right;
+            font-size: 11px;
+            color: #333333;
+            line-height: 1.3;
+        }
+        .title-block {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .title-block h2 {
+            font-size: 18px;
+            font-weight: 700;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 2px solid #000000;
+            display: inline-block;
+            padding: 6px 16px;
+        }
+        .citation-meta {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .citation-meta td {
+            padding: 6px 8px;
+            font-size: 13px;
+        }
+        .meta-label {
+            font-weight: 700;
+            width: 180px;
+            text-transform: uppercase;
+            font-size: 12px;
+        }
+        .meta-val {
+            border-bottom: 1px dotted #000000;
+        }
+        .section-title {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            border-bottom: 2px solid #000000;
+            padding-bottom: 4px;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            letter-spacing: 0.5px;
+        }
+        .evidence-container {
+            text-align: center;
+            margin-bottom: 20px;
+            border: 1px solid #000000;
+            padding: 10px;
+            background-color: #fafafa;
+        }
+        .evidence-container img {
+            max-width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+        }
+        .evidence-caption {
+            font-size: 11px;
+            font-style: italic;
+            margin-top: 8px;
+            color: #444444;
+        }
+        .payment-block {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+            background-color: #f9f9f9;
+            border: 1px solid #000000;
+        }
+        .payment-block td {
+            padding: 15px;
+            vertical-align: middle;
+        }
+        .qr-code-cell {
+            width: 120px;
+            text-align: center;
+            border-right: 1px solid #000000;
+        }
+        .qr-code-cell img {
+            width: 100px;
+            height: 100px;
+        }
+        .payment-instructions h3 {
+            font-size: 14px;
+            font-weight: 700;
+            margin: 0 0 6px 0;
+            text-transform: uppercase;
+        }
+        .payment-instructions p {
+            font-size: 12px;
+            margin: 0 0 10px 0;
+            color: #333333;
+            line-height: 1.4;
+        }
+        .fine-amount {
+            font-size: 18px;
+            font-weight: 800;
+            color: #000000;
+            margin-top: 5px;
+        }
+        .footer-legal {
+            margin-top: 40px;
+            font-size: 10px;
+            color: #555555;
+            text-align: justify;
+            line-height: 1.3;
+            border-top: 1px solid #cccccc;
+            padding-top: 10px;
+        }
+        .signature-table {
+            width: 100%;
+            margin-top: 35px;
+        }
+        .signature-line {
+            width: 200px;
+            border-bottom: 1px solid #000000;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 600;
+            padding-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <table class="header-table">
+        <tr>
+            <td>
+                <h1 class="header-logo-text">APIC-TV</h1>
+                <p class="header-subtext">Automated Photo Identification & Classification (APIC-TV)</p>
+            </td>
+            <td class="authority-details">
+                <strong>DEPARTMENT OF TRAFFIC SAFETY</strong><br>
+                Municipal Enforcement Division<br>
+                Administered by Team <strong>NexoraX</strong><br>
+                E-mail: citation@nexorax.gov | Tel: +1 (800) 555-APIC
+            </td>
+        </tr>
+    </table>
+
+    <div class="title-block">
+        <h2>Notice of Traffic Infraction</h2>
+    </div>
+
+    <div class="section-title">Citation Information</div>
+    <table class="citation-meta">
+        <tr>
+            <td class="meta-label">Citation Ref ID:</td>
+            <td class="meta-val"><strong>APIC-TV-2026-${item.id}</strong></td>
+            <td class="meta-label">Issue Date:</td>
+            <td class="meta-val">${new Date().toLocaleDateString()}</td>
+        </tr>
+        <tr>
+            <td class="meta-label">Vehicle License Plate:</td>
+            <td class="meta-val"><strong>${item.license_plate || 'UNKNOWN'}</strong></td>
+            <td class="meta-label">Offense Category:</td>
+            <td class="meta-val">${item.violation_type}</td>
+        </tr>
+        <tr>
+            <td class="meta-label">Vehicle Category:</td>
+            <td class="meta-val">${item.vehicle_type.toUpperCase()}</td>
+            <td class="meta-label">Event Timestamp:</td>
+            <td class="meta-val">${new Date(item.timestamp).toLocaleString()}</td>
+        </tr>
+    </table>
+
+    <div class="section-title">Photographic & AI Bounding Evidence</div>
+    <div class="evidence-container">
+        <img src="${imageSrc}" alt="Annotated Infraction Evidence">
+        <div class="evidence-caption">Figure 1.0: Photographic evidence recorded by camera station at ${new Date(item.timestamp).toLocaleString()} featuring vehicle plate ${item.license_plate || 'UNKNOWN'} highlighting infraction overlay (AI Classification Confidence: ${Math.round(item.confidence * 100)}%).</div>
+    </div>
+
+    <div class="section-title">Settle Citation / Penalty Fine</div>
+    <table class="payment-block">
+        <tr>
+            <td class="qr-code-cell">
+                <img src="${qrSrc}" alt="Citation Portal QR Code">
+                <div style="font-size: 8px; font-weight: 700; margin-top: 4px; text-transform: uppercase;">Scan To Pay</div>
+            </td>
+            <td class="payment-instructions">
+                <h3>Payment Methods & Instructions</h3>
+                <p>
+                    Please scan the QR code to verify this notice and pay the penalty fee online. Alternatively, visit the portal link directly. Fines must be paid within 15 days of receiving this notice.
+                </p>
+                <div class="fine-amount">
+                    <strong>TOTAL PENALTY AMOUNT: ${fineAmount}</strong>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <table class="signature-table">
+        <tr>
+            <td>
+                <div class="signature-line">
+                    AI Enforcement Engine (APIC-TV)<br>
+                    <span style="font-size: 9px; font-weight: normal; color: #666666;">Digitally Certified Authenticator</span>
+                </div>
+            </td>
+            <td style="text-align: right;">
+                <div class="signature-line" style="margin-left: auto;">
+                    Municipal Registrar Office<br>
+                    <span style="font-size: 9px; font-weight: normal; color: #666666;">Enforcement Signature / Seal</span>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <div class="footer-legal">
+        <strong>LEGAL DISCLAIMER:</strong> This citation was generated automatically by the Automated Photo Identification and Classification system utilizing deep learning AI algorithms. The license plate was verified using OCR plate recognition. Under Section 177 of the Municipal Motor Vehicles Act, the owner of the vehicle identified above is liable for the infraction. If you wish to contest this citation, you must file a petition at the Traffic Court within 10 days of notice. Failure to pay the fine within 15 days will result in late fees and potential suspension of vehicle registration.
+    </div>
+</body>
+</html>
+    `);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => {
+        printWindow.print();
+        printWindow.close();
+    }, 500);
 }
 
 async function updateViolationReviewStatus(id, status) {
     if (isBrowserDemoMode) {
         let data = getMockViolations();
+        let updatedItem = null;
         data = data.map(item => {
             if (item.id === id) {
                 item.status = status;
+                updatedItem = item;
             }
             return item;
         });
         localStorage.setItem("apic_violations", JSON.stringify(data));
-        document.getElementById("violation-modal").style.display = "none";
+        
         // Refresh whichever view we are on
         if (currentTab === "dashboard") loadDashboardData();
         else if (currentTab === "history") loadHistoryData(document.getElementById("filter-search-input").value, historyPage);
+        
+        if (status === "approved" && updatedItem) {
+            currentActiveItem = updatedItem;
+            updateModalViewForStatus(updatedItem);
+        } else {
+            document.getElementById("violation-modal").style.display = "none";
+        }
         return;
     }
     
@@ -1541,13 +1891,24 @@ async function updateViolationReviewStatus(id, status) {
         
         const result = await res.json();
         if (result.status === "success") {
-            document.getElementById("violation-modal").style.display = "none";
             // Refresh whichever view we are on
             if (currentTab === "dashboard") loadDashboardData();
             else if (currentTab === "history") loadHistoryData(document.getElementById("filter-search-input").value, historyPage);
+            
+            if (status === "approved") {
+                if (currentActiveItem && currentActiveItem.id === id) {
+                    currentActiveItem.status = "approved";
+                    updateModalViewForStatus(currentActiveItem);
+                } else {
+                    document.getElementById("violation-modal").style.display = "none";
+                }
+            } else {
+                document.getElementById("violation-modal").style.display = "none";
+            }
         }
     } catch (err) {
         console.error("Update status failed:", err);
+        document.getElementById("violation-modal").style.display = "none";
     }
 }
 

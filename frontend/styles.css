@@ -1635,3 +1635,96 @@ body {
     }
 }
 
+/* Citation Payment Section inside Modal */
+.modal-citation-details {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 8px;
+    animation: fadeIn 0.4s ease;
+}
+
+.modal-citation-details h4 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.citation-qr-card {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    padding: 16px;
+    border-radius: 10px;
+}
+
+body.light-theme .citation-qr-card {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.qr-code-wrapper {
+    background: #ffffff;
+    padding: 10px;
+    border-radius: 8px;
+    width: 120px;
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    flex-shrink: 0;
+    position: relative;
+}
+
+.qr-code-wrapper img {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+}
+
+.qr-label {
+    display: none;
+}
+
+.citation-payment-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-grow: 1;
+}
+
+.citation-payment-status {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--success);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.citation-payment-desc {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 4px;
+}
+
+#btn-print-citation {
+    align-self: flex-start;
+    padding: 8px 20px;
+}
+
+@media (max-width: 768px) {
+    .citation-qr-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    #btn-print-citation {
+        align-self: stretch;
+    }
+}
+

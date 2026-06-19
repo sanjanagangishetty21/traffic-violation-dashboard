@@ -535,7 +535,7 @@
                         </div>
                     </div>
 
-                    <div class="modal-review-actions">
+                    <div class="modal-review-actions" id="modal-review-section">
                         <h4>Review Action Required</h4>
                         <p>Verify that the bounding boxes match and plate transcription is accurate before generating citation.</p>
                         
@@ -546,6 +546,26 @@
                             <button class="btn btn-danger" id="btn-modal-reject">
                                 <i class="fa-solid fa-trash-can"></i> Reject Citation
                             </button>
+                        </div>
+                    </div>
+
+                    <!-- Citation & Print Actions (Visible when Approved/Issued) -->
+                    <div class="modal-citation-details" id="modal-citation-section" style="display: none;">
+                        <h4><i class="fa-solid fa-file-invoice"></i> Citation & Payment Portal</h4>
+                        <div class="citation-qr-card">
+                            <div class="qr-code-wrapper">
+                                <img id="citation-qr-code" src="" alt="Payment QR Code">
+                                <span class="qr-label">OFFICIAL PORTAL</span>
+                            </div>
+                            <div class="citation-payment-info">
+                                <p class="citation-payment-status"><i class="fa-solid fa-circle-check"></i> Citation Approved & Issued</p>
+                                <p class="citation-payment-desc">
+                                    An official citation has been issued for this violation. Scan the QR code to proceed to the payment portal, or print the notice for mail dispatch.
+                                </p>
+                                <button class="btn btn-primary" id="btn-print-citation">
+                                    <i class="fa-solid fa-print"></i> Print Official Citation
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
