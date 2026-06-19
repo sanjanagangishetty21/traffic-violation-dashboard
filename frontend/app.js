@@ -2254,3 +2254,91 @@ function debounce(func, wait) {
         timeout = setTimeout(later, wait);
     };
 }
+
+// --- PREMIUM TOAST & AUDIO ALERTS ---
+function showToast(message, type = "info") {
+    const container = document.getElementById("toast-container");
+    if (!container) return;
+    
+    const toast = document.createElement("div");
+    toast.className = `toast ${type}`;
+    
+    let iconClass = "fa-circle-info";
+    if (type === "success") iconClass = "fa-circle-check";
+    else if (type === "error") iconClass = "fa-circle-xmark";
+    
+    toast.innerHTML = `
+        <i class="fa-solid ${iconClass} toast-icon"></i>
+        <div class="toast-content">${message}</div>
+    `;
+    
+    container.appendChild(toast);
+    playToastSound(type);
+    
+    // Auto-remove after 4 seconds
+    setTimeout(() => {
+        toast.classList.add("fade-out");
+        setTimeout(() => {
+            if (toast.parentNode === container) {
+                container.removeChild(toast);
+            }
+        }, 350);
+    }, 4000);
+}
+
+function playToastSound(type) {
+    try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
+        
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        
+        if (type === "success") {
+            // Happy success chime: two quick notes
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
+            gain.gain.setValueAtTime(0.05, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.005, ctx.currentTime + 0.15);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.15);
+            
+            setTimeout(() => {
+                try {
+                    const ctx2 = new AudioContext();
+                    const osc2 = ctx2.createOscillator();
+                    const gain2 = ctx2.createGain();
+                    osc2.connect(gain2);
+                    gain2.connect(ctx2.destination);
+                    osc2.frequency.setValueAtTime(880, ctx2.currentTime); // A5
+                    gain2.gain.setValueAtTime(0.05, ctx2.currentTime);
+                    gain2.gain.exponentialRampToValueAtTime(0.005, ctx2.currentTime + 0.25);
+                    osc2.start(ctx2.currentTime);
+                    osc2.stop(ctx2.currentTime + 0.25);
+                } catch (e) {}
+            }, 80);
+        } else if (type === "error") {
+            // Sad error chime: double low sawtooth buzz
+            osc.type = "sawtooth";
+            osc.frequency.setValueAtTime(140, ctx.currentTime);
+            gain.gain.setValueAtTime(0.08, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.005, ctx.currentTime + 0.3);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.3);
+        } else {
+            // Info chime: simple sine note
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(440, ctx.currentTime); // A4
+            gain.gain.setValueAtTime(0.05, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.005, ctx.currentTime + 0.2);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.2);
+        }
+    } catch (e) {
+        console.warn("AudioContext block by browser auto-play policy:", e);
+    }
+}
