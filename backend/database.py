@@ -120,22 +120,44 @@ def update_violation_status(violation_id, status):
     conn.commit()
     conn.close()
 
-def get_settings():
+def get_settings(camera: str = "cam_01"):
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT key, value FROM settings")
-    rows = cursor.fetchall()
+    cursor.execute("SELECT value FROM settings WHERE key = ?", (camera,))
+    row = cursor.fetchone()
     conn.close()
-    
-    settings = {}
-    for row in rows:
-        settings[row['key']] = json.loads(row['value'])
-    return settings
+    if row:
+        return json.loads(row['value'])
+        
+    defaults = {
+        "cam_01": {
+            "stop_line": {"start": [100, 420], "end": [700, 420]},
+            "no_parking_zone": [[100, 450], [350, 450], [300, 580], [50, 580]],
+            "traffic_light_state": "Red",
+            "traffic_light_zone": {"x": 695, "y": 100, "width": 40, "height": 120},
+            "lane_directions": {"lane1": "North", "lane2": "South"}
+        },
+        "cam_02": {
+            "stop_line": {"start": [250, 380], "end": [550, 380]},
+            "no_parking_zone": [[300, 100], [500, 100], [500, 200], [300, 200]],
+            "traffic_light_state": "Green",
+            "traffic_light_zone": {"x": 570, "y": 80, "width": 40, "height": 120},
+            "lane_directions": {"lane1": "East", "lane2": "West"}
+        },
+        "cam_03": {
+            "stop_line": {"start": [150, 450], "end": [650, 450]},
+            "no_parking_zone": [[50, 480], [280, 480], [220, 590], [20, 590]],
+            "traffic_light_state": "Red",
+            "traffic_light_zone": {"x": 680, "y": 120, "width": 40, "height": 120},
+            "lane_directions": {"lane1": "North-West", "lane2": "South-East"}
+        }
+    }
+    return defaults.get(camera, defaults["cam_01"])
 
-def update_setting(key, value):
+def update_setting(camera, value):
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", (key, json.dumps(value)))
+    cursor.execute("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", (camera, json.dumps(value)))
     conn.commit()
     conn.close()
 

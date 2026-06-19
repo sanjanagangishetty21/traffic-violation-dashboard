@@ -164,21 +164,18 @@ def api_get_analytics():
     return stats
 
 @app.get("/api/settings")
-def api_get_settings():
-    return get_settings()
+def api_get_settings(camera: str = Query("cam_01")):
+    return get_settings(camera)
 
 @app.post("/api/settings")
-def api_save_settings(payload: SettingsRequest):
-    update_setting("stop_line", payload.stop_line)
-    update_setting("traffic_light_zone", payload.traffic_light_zone)
-    update_setting("no_parking_zone", payload.no_parking_zone)
-    update_setting("traffic_light_state", payload.traffic_light_state)
-    update_setting("lane_directions", payload.lane_directions)
-    return {"status": "success", "message": "Settings updated successfully."}
+def api_save_settings(payload: SettingsRequest, camera: str = Query("cam_01")):
+    update_setting(camera, payload.dict())
+    return {"status": "success", "message": f"Settings for {camera} updated successfully."}
 
 @app.post("/api/process")
 async def api_process_image(
     file: UploadFile = File(...),
+    camera: str = Query("cam_01"),
     low_light: bool = Query(False),
     sharpen: bool = Query(False),
     shadow: bool = Query(False),
@@ -194,7 +191,7 @@ async def api_process_image(
             shutil.copyfileobj(file.file, buffer)
             
         # Get active settings from database
-        settings = get_settings()
+        settings = get_settings(camera)
         # Add custom pre-processing filters selected from query params
         settings["filters"] = {
             "low_light": low_light,
