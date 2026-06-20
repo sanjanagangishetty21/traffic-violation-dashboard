@@ -152,8 +152,8 @@ def api_get_violations(
 
 @app.put("/api/violations/{violation_id}/status")
 def api_update_status(violation_id: int, payload: UpdateStatusRequest):
-    if payload.status not in ["pending", "approved", "rejected"]:
-        raise HTTPException(status_code=400, detail="Invalid status. Must be pending, approved, or rejected.")
+    if payload.status not in ["pending", "approved", "rejected", "resolved"]:
+        raise HTTPException(status_code=400, detail="Invalid status. Must be pending, approved, rejected, or resolved.")
         
     update_violation_status(violation_id, payload.status)
     return {"status": "success", "message": f"Violation {violation_id} updated to {payload.status}."}

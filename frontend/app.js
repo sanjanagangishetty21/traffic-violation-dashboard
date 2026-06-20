@@ -655,7 +655,7 @@ async function loadHistoryData(search = "", page = 1) {
                 <td>${item.vehicle_type.toUpperCase()}</td>
                 <td><span class="plate-text-badge">${item.license_plate || 'UNKNOWN'}</span></td>
                 <td>${Math.round(item.confidence * 100)}%</td>
-                <td><span class="badge ${getStatusBadgeClass(item.status)}">${item.status}</span></td>
+                <td><span class="badge ${getStatusBadgeClass(item.status)}">${item.status === 'resolved' ? 'resolved (paid)' : item.status}</span></td>
                 <td>
                     <button class="btn btn-sm btn-outline btn-view-evidence" data-id="${item.id}">
                         <i class="fa-solid fa-eye"></i> View
@@ -713,7 +713,7 @@ async function loadHistoryData(search = "", page = 1) {
                 <td>${item.vehicle_type.toUpperCase()}</td>
                 <td><span class="plate-text-badge">${item.license_plate || 'UNKNOWN'}</span></td>
                 <td>${Math.round(item.confidence * 100)}%</td>
-                <td><span class="badge ${getStatusBadgeClass(item.status)}">${item.status}</span></td>
+                <td><span class="badge ${getStatusBadgeClass(item.status)}">${item.status === 'resolved' ? 'resolved (paid)' : item.status}</span></td>
                 <td>
                     <button class="btn btn-sm btn-outline btn-view-evidence" data-id="${item.id}">
                         <i class="fa-solid fa-eye"></i> View
@@ -1716,20 +1716,37 @@ function updateModalViewForStatus(item) {
     const citationSection = document.getElementById("modal-citation-section");
     const qrImg = document.getElementById("citation-qr-code");
     
-    if (item.status === "approved") {
+    if (item.status === "approved" || item.status === "resolved") {
         reviewSection.style.display = "none";
         citationSection.style.display = "flex";
         
-        // Dynamic official payment QR code pointing to current site instance
-        let portalUrl = window.location.origin + window.location.pathname;
-        if (portalUrl.includes("localhost") || portalUrl.includes("127.0.0.1") || window.location.protocol === "file:") {
-            portalUrl = "https://traffic-violation-dashboard.vercel.app/";
+        const isPaid = item.status === "resolved";
+        
+        // Find elements to update text dynamically
+        const statusText = citationSection.querySelector(".citation-payment-status");
+        const descText = citationSection.querySelector(".citation-payment-desc");
+        const qrSection = citationSection.querySelector(".qr-code-section");
+        
+        if (isPaid) {
+            if (statusText) statusText.innerHTML = `<i class="fa-solid fa-circle-check" style="color: var(--success);"></i> Penalty Settled & Resolved`;
+            if (descText) descText.textContent = "This citation has been resolved and paid successfully. No further action is required.";
+            if (qrSection) qrSection.style.display = "none"; // Hide QR and Scan button
+        } else {
+            if (statusText) statusText.innerHTML = `<i class="fa-solid fa-circle-check"></i> Citation Approved & Issued`;
+            if (descText) descText.textContent = "An official citation has been issued for this violation. Scan the QR code to proceed to the payment portal, or print the notice for mail dispatch.";
+            if (qrSection) qrSection.style.display = "flex"; // Show QR and Scan button
+            
+            // Dynamic official payment QR code pointing to current site instance
+            let portalUrl = window.location.origin + window.location.pathname;
+            if (portalUrl.includes("localhost") || portalUrl.includes("127.0.0.1") || window.location.protocol === "file:") {
+                portalUrl = "https://traffic-violation-dashboard.vercel.app/";
+            }
+            if (!portalUrl.endsWith('/') && !portalUrl.endsWith('index.html')) {
+                portalUrl += '/';
+            }
+            const paymentUrl = `${portalUrl}?pay=true&id=${item.id}&type=${encodeURIComponent(item.violation_type)}&plate=${encodeURIComponent(item.license_plate)}&fine=${encodeURIComponent(getFineAmount(item.violation_type))}`;
+            qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&color=0f172a&data=${encodeURIComponent(paymentUrl)}`;
         }
-        if (!portalUrl.endsWith('/') && !portalUrl.endsWith('index.html')) {
-            portalUrl += '/';
-        }
-        const paymentUrl = `${portalUrl}?pay=true&id=${item.id}&type=${encodeURIComponent(item.violation_type)}&plate=${encodeURIComponent(item.license_plate)}&fine=${encodeURIComponent(getFineAmount(item.violation_type))}`;
-        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&color=0f172a&data=${encodeURIComponent(paymentUrl)}`;
     } else if (item.status === "rejected") {
         reviewSection.style.display = "none";
         citationSection.style.display = "none";
@@ -2356,6 +2373,7 @@ function getViolationBadgeClass(vtype) {
 }
 
 function getStatusBadgeClass(status) {
+    if (status === "resolved") return "green";
     if (status === "approved") return "green";
     if (status === "rejected") return "red";
     return "orange";
@@ -2643,7 +2661,7 @@ async function settleTicketPaymentLocal(ticketId) {
     let data = getMockViolations();
     data = data.map(item => {
         if (item.id === ticketId) {
-            item.status = "approved"; // keep as approved but logs show paid
+            item.status = "resolved"; // set to resolved
         }
         return item;
     });
@@ -2655,7 +2673,7 @@ async function settleTicketPaymentLocal(ticketId) {
             await fetch(`${API_BASE}/violations/${ticketId}/status`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ status: "approved" })
+                body: JSON.stringify({ status: "resolved" })
             });
         } catch (e) {
             console.warn("Could not sync settlement status with FastAPI backend server:", e);
