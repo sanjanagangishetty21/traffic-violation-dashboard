@@ -562,10 +562,12 @@
                     <div class="modal-citation-details" id="modal-citation-section" style="display: none;">
                         <h4><i class="fa-solid fa-file-invoice"></i> Citation & Payment Portal</h4>
                         <div class="citation-qr-card">
-                            <div class="qr-code-wrapper">
-                                <img id="citation-qr-code" src="" alt="Payment QR Code">
-                                <span class="qr-label">OFFICIAL PORTAL</span>
-                                <button class="btn btn-sm btn-outline" id="btn-scan-qr" style="margin-top: 8px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 6px 12px; font-size: 0.75rem; border-radius: 4px;">
+                            <div class="qr-code-section" style="display: flex; flex-direction: column; align-items: center; gap: 10px; flex-shrink: 0;">
+                                <div class="qr-code-wrapper">
+                                    <img id="citation-qr-code" src="" alt="Payment QR Code" style="width: 100px; height: 100px;">
+                                    <span class="qr-label">OFFICIAL PORTAL</span>
+                                </div>
+                                <button class="btn btn-sm btn-outline" id="btn-scan-qr" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 6px 12px; font-size: 0.75rem; border-radius: 4px; border: 1px solid var(--border-color); background: transparent; color: var(--text-color); cursor: pointer;">
                                     <i class="fa-solid fa-expand"></i> Scan QR
                                 </button>
                             </div>
