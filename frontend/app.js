@@ -1666,6 +1666,18 @@ function setupModalHandlers() {
             printCitationNotice(currentActiveItem);
         }
     });
+
+    document.getElementById("btn-scan-qr").addEventListener("click", () => {
+        if (currentActiveItem) {
+            openPaymentGateway({
+                id: currentActiveItem.id,
+                violation_type: currentActiveItem.violation_type,
+                license_plate: currentActiveItem.license_plate,
+                fine_amount: getFineAmount(currentActiveItem.violation_type)
+            });
+            document.getElementById("violation-modal").style.display = "none";
+        }
+    });
 }
 
 function openEvidenceModal(item) {
