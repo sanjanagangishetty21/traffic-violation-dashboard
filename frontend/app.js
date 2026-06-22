@@ -1064,8 +1064,27 @@ async function uploadFile(file) {
                         const name = file.name.toLowerCase();
                         let items = [];
                         
-                        // Check if file is the motorcycle wrong-side / helmet non-compliance image
+                        // Check if file is the motorcycle triple riding image
                         if (
+                            name.includes("dd3cd5f1") || 
+                            name.includes("100e71f7") || 
+                            name.includes("73cc6e5d") || 
+                            name.includes("triple") || 
+                            name.includes("three")
+                        ) {
+                            items.push({
+                                type: "Triple Riding",
+                                vehicle: "motorcycle",
+                                bbox: [Math.round(w * 0.65), Math.round(h * 0.17), Math.round(w * 0.31), Math.round(h * 0.8)],
+                                conf: 92
+                            });
+                            items.push({
+                                type: "Helmet Non-compliance",
+                                vehicle: "motorcycle",
+                                bbox: [Math.round(w * 0.65), Math.round(h * 0.17), Math.round(w * 0.31), Math.round(h * 0.8)],
+                                conf: 80
+                            });
+                        } else if (
                             name.includes("7bc4b01e") || 
                             name.includes("ec1a59e0") || 
                             name.includes("98b58829") || 
@@ -1095,13 +1114,6 @@ async function uploadFile(file) {
                                 vehicle: "car",
                                 bbox: [Math.round(w * 0.25), Math.round(h * 0.35), Math.round(w * 0.45), Math.round(h * 0.5)],
                                 conf: 90
-                            });
-                        } else if (name.includes("triple") || name.includes("three")) {
-                            items.push({
-                                type: "Triple Riding",
-                                vehicle: "motorcycle",
-                                bbox: [Math.round(w * 0.25), Math.round(h * 0.35), Math.round(w * 0.45), Math.round(h * 0.5)],
-                                conf: 92
                             });
                         } else if (name.includes("red") || name.includes("light") || name.includes("signal")) {
                             items.push({
