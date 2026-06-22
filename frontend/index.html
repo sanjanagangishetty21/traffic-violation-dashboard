@@ -660,6 +660,13 @@
                         <p style="font-size: 11px; color: var(--text-secondary); line-height: 1.4; max-width: 250px;">
                             Scan this dynamic UPI QR Code with Google Pay, PhonePe, Paytm, or BHIM to pay the penalty.
                         </p>
+                        
+                        <!-- UPI UTR Verification -->
+                        <div class="form-group-pay" style="width: 100%; max-width: 200px; text-align: left; margin: 4px 0 2px 0;">
+                            <label for="pay-upi-utr" style="font-size: 10px; display: block; margin-bottom: 4px;">UPI Ref No. / UTR (12 Digits)</label>
+                            <input type="text" id="pay-upi-utr" placeholder="Enter 12-digit UTR" maxlength="12" style="font-size: 13px; text-align: center; letter-spacing: 0.5px; padding: 8px 10px; width: 100%;" required>
+                        </div>
+
                         <button class="btn btn-outline pay-btn-sm" id="btn-upi-success" style="width: 100%; max-width: 200px;">
                             <i class="fa-solid fa-circle-check"></i> I have paid the fine
                         </button>

@@ -2521,6 +2521,11 @@ function openPaymentGateway(details) {
     document.getElementById("payment-loading-view").style.display = "none";
     document.getElementById("payment-card-form").reset();
     
+    const utrInput = document.getElementById("pay-upi-utr");
+    if (utrInput) {
+        utrInput.value = "";
+    }
+    
     switchPaymentMethod("card");
     
     // Open gateway overlay
@@ -2601,11 +2606,30 @@ function setupPaymentGatewayHandlers() {
         });
     }
     
+    // UPI UTR input restriction to digits only
+    const upiUtr = document.getElementById("pay-upi-utr");
+    if (upiUtr) {
+        upiUtr.addEventListener("input", (e) => {
+            e.target.value = e.target.value.replace(/[^0-9]/gi, '');
+        });
+    }
+    
     // UPI Paid confirmation trigger
     const upiPaidBtn = document.getElementById("btn-upi-success");
     if (upiPaidBtn) {
         upiPaidBtn.addEventListener("click", () => {
-            triggerPaymentSettlement("UPI Application");
+            const utrInput = document.getElementById("pay-upi-utr");
+            if (utrInput) {
+                const utr = utrInput.value.trim();
+                if (!/^\d{12}$/.test(utr)) {
+                    showToast("Please enter a valid 12-digit UPI Reference Number (UTR) from your payment confirmation screen.", "error");
+                    utrInput.focus();
+                    return;
+                }
+                triggerPaymentSettlement(`UPI (UTR: ${utr})`);
+            } else {
+                triggerPaymentSettlement("UPI Application");
+            }
         });
     }
 }
