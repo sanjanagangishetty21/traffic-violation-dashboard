@@ -1,0 +1,1979 @@
+{
+  "status": "success",
+  "isVideo": true,
+  "duration": 30.16,
+  "fps": 12.5,
+  "detections_count": 150,
+  "detections_by_frame": [
+    {
+      "timestamp": 0.0,
+      "frame_index": 0,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 0.16,
+      "frame_index": 2,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 0.32,
+      "frame_index": 4,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 0.48,
+      "frame_index": 6,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 0.64,
+      "frame_index": 8,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 0.8,
+      "frame_index": 10,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 0.96,
+      "frame_index": 12,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 1.12,
+      "frame_index": 14,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 1.28,
+      "frame_index": 16,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 1.44,
+      "frame_index": 18,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 1.6,
+      "frame_index": 20,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 1.76,
+      "frame_index": 22,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 1.92,
+      "frame_index": 24,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 2.08,
+      "frame_index": 26,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 2.24,
+      "frame_index": 28,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 2.4,
+      "frame_index": 30,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 2.56,
+      "frame_index": 32,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 2.72,
+      "frame_index": 34,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 2.88,
+      "frame_index": 36,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 3.04,
+      "frame_index": 38,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 3.2,
+      "frame_index": 40,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 3.36,
+      "frame_index": 42,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 3.52,
+      "frame_index": 44,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 3.68,
+      "frame_index": 46,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 3.84,
+      "frame_index": 48,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 4.0,
+      "frame_index": 50,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 4.16,
+      "frame_index": 52,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 4.32,
+      "frame_index": 54,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 4.48,
+      "frame_index": 56,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 4.64,
+      "frame_index": 58,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 4.8,
+      "frame_index": 60,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 4.96,
+      "frame_index": 62,
+      "detections": [
+        {
+          "class": "car",
+          "confidence": 0.656146764755249,
+          "bbox": [
+            281,
+            300,
+            197,
+            129
+          ]
+        }
+      ],
+      "plates": [
+        {
+          "bbox": [
+            281,
+            351,
+            197,
+            77
+          ],
+          "text": "AP 68 BQ 4457",
+          "confidence": 0.85
+        }
+      ],
+      "violations": []
+    },
+    {
+      "timestamp": 5.12,
+      "frame_index": 64,
+      "detections": [
+        {
+          "class": "car",
+          "confidence": 0.5699905753135681,
+          "bbox": [
+            279,
+            276,
+            201,
+            152
+          ]
+        }
+      ],
+      "plates": [
+        {
+          "bbox": [
+            279,
+            336,
+            201,
+            91
+          ],
+          "text": "UP 23 JN 7819",
+          "confidence": 0.85
+        }
+      ],
+      "violations": []
+    },
+    {
+      "timestamp": 5.28,
+      "frame_index": 66,
+      "detections": [
+        {
+          "class": "car",
+          "confidence": 0.5065182447433472,
+          "bbox": [
+            275,
+            246,
+            205,
+            182
+          ]
+        }
+      ],
+      "plates": [
+        {
+          "bbox": [
+            275,
+            318,
+            205,
+            109
+          ],
+          "text": "UP 55 GC 6162",
+          "confidence": 0.85
+        }
+      ],
+      "violations": []
+    },
+    {
+      "timestamp": 5.44,
+      "frame_index": 68,
+      "detections": [
+        {
+          "class": "car",
+          "confidence": 0.39481785893440247,
+          "bbox": [
+            274,
+            217,
+            206,
+            210
+          ]
+        }
+      ],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 5.6,
+      "frame_index": 70,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 5.76,
+      "frame_index": 72,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 5.92,
+      "frame_index": 74,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 6.08,
+      "frame_index": 76,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 6.24,
+      "frame_index": 78,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 6.4,
+      "frame_index": 80,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 6.56,
+      "frame_index": 82,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 6.72,
+      "frame_index": 84,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 6.88,
+      "frame_index": 86,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 7.04,
+      "frame_index": 88,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 7.2,
+      "frame_index": 90,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 7.36,
+      "frame_index": 92,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 7.52,
+      "frame_index": 94,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 7.68,
+      "frame_index": 96,
+      "detections": [
+        {
+          "class": "car",
+          "confidence": 0.4883246123790741,
+          "bbox": [
+            280,
+            1,
+            122,
+            116
+          ]
+        }
+      ],
+      "plates": [
+        {
+          "bbox": [
+            304,
+            79,
+            80,
+            16
+          ],
+          "text": "HR 32 PO 8381",
+          "confidence": 0.85
+        }
+      ],
+      "violations": []
+    },
+    {
+      "timestamp": 7.84,
+      "frame_index": 98,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 8.0,
+      "frame_index": 100,
+      "detections": [
+        {
+          "class": "car",
+          "confidence": 0.6951415538787842,
+          "bbox": [
+            283,
+            0,
+            116,
+            72
+          ]
+        }
+      ],
+      "plates": [
+        {
+          "bbox": [
+            283,
+            28,
+            116,
+            43
+          ],
+          "text": "AP 55 BR 3726",
+          "confidence": 0.85
+        }
+      ],
+      "violations": [
+        {
+          "type": "Seatbelt Non-compliance",
+          "confidence": 0.81,
+          "target_bbox": [
+            283,
+            0,
+            116,
+            72
+          ],
+          "details": "Front seat passenger detected without seatbelt"
+        }
+      ]
+    },
+    {
+      "timestamp": 8.16,
+      "frame_index": 102,
+      "detections": [
+        {
+          "class": "car",
+          "confidence": 0.4818466007709503,
+          "bbox": [
+            283,
+            1,
+            113,
+            51
+          ]
+        }
+      ],
+      "plates": [
+        {
+          "bbox": [
+            283,
+            21,
+            113,
+            30
+          ],
+          "text": "MH 41 QQ 8929",
+          "confidence": 0.85
+        }
+      ],
+      "violations": []
+    },
+    {
+      "timestamp": 8.32,
+      "frame_index": 104,
+      "detections": [
+        {
+          "class": "car",
+          "confidence": 0.5261338353157043,
+          "bbox": [
+            286,
+            0,
+            108,
+            40
+          ]
+        }
+      ],
+      "plates": [
+        {
+          "bbox": [
+            286,
+            16,
+            108,
+            20
+          ],
+          "text": "KA 26 KT 1230",
+          "confidence": 0.85
+        }
+      ],
+      "violations": []
+    },
+    {
+      "timestamp": 8.48,
+      "frame_index": 106,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 8.64,
+      "frame_index": 108,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 8.8,
+      "frame_index": 110,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 8.96,
+      "frame_index": 112,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 9.12,
+      "frame_index": 114,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 9.28,
+      "frame_index": 116,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 9.44,
+      "frame_index": 118,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 9.6,
+      "frame_index": 120,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 9.76,
+      "frame_index": 122,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 9.92,
+      "frame_index": 124,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 10.08,
+      "frame_index": 126,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 10.24,
+      "frame_index": 128,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 10.4,
+      "frame_index": 130,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 10.56,
+      "frame_index": 132,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 10.72,
+      "frame_index": 134,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 10.88,
+      "frame_index": 136,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 11.04,
+      "frame_index": 138,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 11.2,
+      "frame_index": 140,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 11.36,
+      "frame_index": 142,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 11.52,
+      "frame_index": 144,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 11.68,
+      "frame_index": 146,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 11.84,
+      "frame_index": 148,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 12.0,
+      "frame_index": 150,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 12.16,
+      "frame_index": 152,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 12.32,
+      "frame_index": 154,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 12.48,
+      "frame_index": 156,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 12.64,
+      "frame_index": 158,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 12.8,
+      "frame_index": 160,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 12.96,
+      "frame_index": 162,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 13.12,
+      "frame_index": 164,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 13.28,
+      "frame_index": 166,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 13.44,
+      "frame_index": 168,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 13.6,
+      "frame_index": 170,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 13.76,
+      "frame_index": 172,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 13.92,
+      "frame_index": 174,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 14.08,
+      "frame_index": 176,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 14.24,
+      "frame_index": 178,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 14.4,
+      "frame_index": 180,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 14.56,
+      "frame_index": 182,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 14.72,
+      "frame_index": 184,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 14.88,
+      "frame_index": 186,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 15.04,
+      "frame_index": 188,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 15.2,
+      "frame_index": 190,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 15.36,
+      "frame_index": 192,
+      "detections": [
+        {
+          "class": "car",
+          "confidence": 0.6071709990501404,
+          "bbox": [
+            135,
+            1,
+            134,
+            136
+          ]
+        }
+      ],
+      "plates": [
+        {
+          "bbox": [
+            135,
+            55,
+            123,
+            81
+          ],
+          "text": "WB 32 CE 3013",
+          "confidence": 0.85
+        }
+      ],
+      "violations": [
+        {
+          "type": "Seatbelt Non-compliance",
+          "confidence": 0.81,
+          "target_bbox": [
+            135,
+            1,
+            134,
+            136
+          ],
+          "details": "Front seat passenger detected without seatbelt"
+        }
+      ]
+    },
+    {
+      "timestamp": 15.52,
+      "frame_index": 194,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 15.68,
+      "frame_index": 196,
+      "detections": [
+        {
+          "class": "car",
+          "confidence": 0.5153193473815918,
+          "bbox": [
+            123,
+            1,
+            142,
+            193
+          ]
+        }
+      ],
+      "plates": [
+        {
+          "bbox": [
+            135,
+            103,
+            107,
+            68
+          ],
+          "text": "KA 31 XW 4752",
+          "confidence": 0.85
+        }
+      ],
+      "violations": [
+        {
+          "type": "Seatbelt Non-compliance",
+          "confidence": 0.81,
+          "target_bbox": [
+            123,
+            1,
+            142,
+            193
+          ],
+          "details": "Front seat passenger detected without seatbelt"
+        }
+      ]
+    },
+    {
+      "timestamp": 15.84,
+      "frame_index": 198,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 16.0,
+      "frame_index": 200,
+      "detections": [
+        {
+          "class": "car",
+          "confidence": 0.3791181743144989,
+          "bbox": [
+            110,
+            1,
+            151,
+            258
+          ]
+        }
+      ],
+      "plates": [
+        {
+          "bbox": [
+            132,
+            130,
+            100,
+            24
+          ],
+          "text": "GJ 65 LN 2165",
+          "confidence": 0.85
+        }
+      ],
+      "violations": [
+        {
+          "type": "Seatbelt Non-compliance",
+          "confidence": 0.81,
+          "target_bbox": [
+            110,
+            1,
+            151,
+            258
+          ],
+          "details": "Front seat passenger detected without seatbelt"
+        }
+      ]
+    },
+    {
+      "timestamp": 16.16,
+      "frame_index": 202,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 16.32,
+      "frame_index": 204,
+      "detections": [
+        {
+          "class": "car",
+          "confidence": 0.3618374168872833,
+          "bbox": [
+            316,
+            166,
+            173,
+            261
+          ]
+        }
+      ],
+      "plates": [
+        {
+          "bbox": [
+            360,
+            343,
+            108,
+            66
+          ],
+          "text": "WB 83 ZQ 3427",
+          "confidence": 0.85
+        }
+      ],
+      "violations": [
+        {
+          "type": "Seatbelt Non-compliance",
+          "confidence": 0.81,
+          "target_bbox": [
+            316,
+            166,
+            173,
+            261
+          ],
+          "details": "Front seat passenger detected without seatbelt"
+        }
+      ]
+    },
+    {
+      "timestamp": 16.48,
+      "frame_index": 206,
+      "detections": [
+        {
+          "class": "car",
+          "confidence": 0.402450829744339,
+          "bbox": [
+            89,
+            59,
+            166,
+            308
+          ]
+        }
+      ],
+      "plates": [
+        {
+          "bbox": [
+            119,
+            183,
+            101,
+            37
+          ],
+          "text": "HR 64 XZ 5649",
+          "confidence": 0.85
+        }
+      ],
+      "violations": [
+        {
+          "type": "Seatbelt Non-compliance",
+          "confidence": 0.81,
+          "target_bbox": [
+            89,
+            59,
+            166,
+            308
+          ],
+          "details": "Front seat passenger detected without seatbelt"
+        },
+        {
+          "type": "Wrong-side Driving",
+          "confidence": 0.91,
+          "target_bbox": [
+            89,
+            59,
+            166,
+            308
+          ],
+          "details": "Vehicle driving oncoming on the incorrect side of the divider"
+        }
+      ]
+    },
+    {
+      "timestamp": 16.64,
+      "frame_index": 208,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 16.8,
+      "frame_index": 210,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 16.96,
+      "frame_index": 212,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 17.12,
+      "frame_index": 214,
+      "detections": [
+        {
+          "class": "bus",
+          "confidence": 0.514609694480896,
+          "bbox": [
+            308,
+            51,
+            158,
+            254
+          ]
+        }
+      ],
+      "plates": [
+        {
+          "bbox": [
+            343,
+            223,
+            113,
+            33
+          ],
+          "text": "AP 49 UL 7181",
+          "confidence": 0.85
+        }
+      ],
+      "violations": [
+        {
+          "type": "Seatbelt Non-compliance",
+          "confidence": 0.81,
+          "target_bbox": [
+            308,
+            51,
+            158,
+            254
+          ],
+          "details": "Front seat passenger detected without seatbelt"
+        },
+        {
+          "type": "Illegal Parking",
+          "confidence": 0.9,
+          "target_bbox": [
+            308,
+            51,
+            158,
+            254
+          ],
+          "details": "Vehicle parked in a designated No Parking zone"
+        }
+      ]
+    },
+    {
+      "timestamp": 17.28,
+      "frame_index": 216,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 17.44,
+      "frame_index": 218,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 17.6,
+      "frame_index": 220,
+      "detections": [
+        {
+          "class": "car",
+          "confidence": 0.48880383372306824,
+          "bbox": [
+            306,
+            1,
+            147,
+            216
+          ]
+        }
+      ],
+      "plates": [
+        {
+          "bbox": [
+            339,
+            143,
+            104,
+            27
+          ],
+          "text": "MH 46 DS 1722",
+          "confidence": 0.85
+        }
+      ],
+      "violations": [
+        {
+          "type": "Seatbelt Non-compliance",
+          "confidence": 0.81,
+          "target_bbox": [
+            306,
+            1,
+            147,
+            216
+          ],
+          "details": "Front seat passenger detected without seatbelt"
+        },
+        {
+          "type": "Illegal Parking",
+          "confidence": 0.9,
+          "target_bbox": [
+            306,
+            1,
+            147,
+            216
+          ],
+          "details": "Vehicle parked in a designated No Parking zone"
+        }
+      ]
+    },
+    {
+      "timestamp": 17.76,
+      "frame_index": 222,
+      "detections": [
+        {
+          "class": "car",
+          "confidence": 0.5731425881385803,
+          "bbox": [
+            64,
+            301,
+            172,
+            127
+          ]
+        },
+        {
+          "class": "bus",
+          "confidence": 0.4566154181957245,
+          "bbox": [
+            305,
+            0,
+            143,
+            192
+          ]
+        }
+      ],
+      "plates": [
+        {
+          "bbox": [
+            64,
+            351,
+            172,
+            76
+          ],
+          "text": "TN 19 FP 8503",
+          "confidence": 0.85
+        },
+        {
+          "bbox": [
+            337,
+            117,
+            101,
+            26
+          ],
+          "text": "HR 31 DQ 8941",
+          "confidence": 0.85
+        }
+      ],
+      "violations": [
+        {
+          "type": "Seatbelt Non-compliance",
+          "confidence": 0.81,
+          "target_bbox": [
+            64,
+            301,
+            172,
+            127
+          ],
+          "details": "Front seat passenger detected without seatbelt"
+        },
+        {
+          "type": "Seatbelt Non-compliance",
+          "confidence": 0.81,
+          "target_bbox": [
+            305,
+            0,
+            143,
+            192
+          ],
+          "details": "Front seat passenger detected without seatbelt"
+        },
+        {
+          "type": "Wrong-side Driving",
+          "confidence": 0.91,
+          "target_bbox": [
+            64,
+            301,
+            172,
+            127
+          ],
+          "details": "Vehicle driving oncoming on the incorrect side of the divider"
+        }
+      ]
+    },
+    {
+      "timestamp": 17.92,
+      "frame_index": 224,
+      "detections": [
+        {
+          "class": "car",
+          "confidence": 0.6054193377494812,
+          "bbox": [
+            65,
+            341,
+            169,
+            88
+          ]
+        }
+      ],
+      "plates": [
+        {
+          "bbox": [
+            65,
+            376,
+            157,
+            52
+          ],
+          "text": "AP 64 GZ 3200",
+          "confidence": 0.85
+        }
+      ],
+      "violations": [
+        {
+          "type": "Wrong-side Driving",
+          "confidence": 0.91,
+          "target_bbox": [
+            65,
+            341,
+            169,
+            88
+          ],
+          "details": "Vehicle driving oncoming on the incorrect side of the divider"
+        }
+      ]
+    },
+    {
+      "timestamp": 18.08,
+      "frame_index": 226,
+      "detections": [
+        {
+          "class": "bus",
+          "confidence": 0.4223911166191101,
+          "bbox": [
+            307,
+            0,
+            131,
+            139
+          ]
+        }
+      ],
+      "plates": [
+        {
+          "bbox": [
+            334,
+            71,
+            95,
+            22
+          ],
+          "text": "DL 54 BM 5101",
+          "confidence": 0.85
+        }
+      ],
+      "violations": [
+        {
+          "type": "Seatbelt Non-compliance",
+          "confidence": 0.81,
+          "target_bbox": [
+            307,
+            0,
+            131,
+            139
+          ],
+          "details": "Front seat passenger detected without seatbelt"
+        }
+      ]
+    },
+    {
+      "timestamp": 18.24,
+      "frame_index": 228,
+      "detections": [
+        {
+          "class": "bus",
+          "confidence": 0.7770752310752869,
+          "bbox": [
+            307,
+            1,
+            125,
+            115
+          ]
+        }
+      ],
+      "plates": [
+        {
+          "bbox": [
+            331,
+            47,
+            101,
+            53
+          ],
+          "text": "UP 30 XS 8438",
+          "confidence": 0.85
+        }
+      ],
+      "violations": [
+        {
+          "type": "Seatbelt Non-compliance",
+          "confidence": 0.81,
+          "target_bbox": [
+            307,
+            1,
+            125,
+            115
+          ],
+          "details": "Front seat passenger detected without seatbelt"
+        }
+      ]
+    },
+    {
+      "timestamp": 18.4,
+      "frame_index": 230,
+      "detections": [
+        {
+          "class": "bus",
+          "confidence": 0.5217164158821106,
+          "bbox": [
+            307,
+            0,
+            122,
+            96
+          ]
+        },
+        {
+          "class": "car",
+          "confidence": 0.4323764443397522,
+          "bbox": [
+            306,
+            0,
+            124,
+            95
+          ]
+        }
+      ],
+      "plates": [
+        {
+          "bbox": [
+            326,
+            38,
+            103,
+            50
+          ],
+          "text": "KA 04 LB 8658",
+          "confidence": 0.85
+        },
+        {
+          "bbox": [
+            326,
+            38,
+            104,
+            50
+          ],
+          "text": "DL 63 NA 3688",
+          "confidence": 0.85
+        }
+      ],
+      "violations": [
+        {
+          "type": "Seatbelt Non-compliance",
+          "confidence": 0.81,
+          "target_bbox": [
+            307,
+            0,
+            122,
+            96
+          ],
+          "details": "Front seat passenger detected without seatbelt"
+        },
+        {
+          "type": "Seatbelt Non-compliance",
+          "confidence": 0.81,
+          "target_bbox": [
+            306,
+            0,
+            124,
+            95
+          ],
+          "details": "Front seat passenger detected without seatbelt"
+        }
+      ]
+    },
+    {
+      "timestamp": 18.56,
+      "frame_index": 232,
+      "detections": [
+        {
+          "class": "car",
+          "confidence": 0.7960620522499084,
+          "bbox": [
+            304,
+            0,
+            121,
+            75
+          ]
+        }
+      ],
+      "plates": [
+        {
+          "bbox": [
+            323,
+            30,
+            102,
+            42
+          ],
+          "text": "HR 05 ZA 8856",
+          "confidence": 0.85
+        }
+      ],
+      "violations": [
+        {
+          "type": "Seatbelt Non-compliance",
+          "confidence": 0.81,
+          "target_bbox": [
+            304,
+            0,
+            121,
+            75
+          ],
+          "details": "Front seat passenger detected without seatbelt"
+        }
+      ]
+    },
+    {
+      "timestamp": 18.72,
+      "frame_index": 234,
+      "detections": [
+        {
+          "class": "car",
+          "confidence": 0.7509626746177673,
+          "bbox": [
+            304,
+            0,
+            115,
+            53
+          ]
+        }
+      ],
+      "plates": [
+        {
+          "bbox": [
+            324,
+            21,
+            95,
+            28
+          ],
+          "text": "WB 71 FV 4177",
+          "confidence": 0.85
+        }
+      ],
+      "violations": []
+    },
+    {
+      "timestamp": 18.88,
+      "frame_index": 236,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 19.04,
+      "frame_index": 238,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 19.2,
+      "frame_index": 240,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 19.36,
+      "frame_index": 242,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 19.52,
+      "frame_index": 244,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 19.68,
+      "frame_index": 246,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 19.84,
+      "frame_index": 248,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 20.0,
+      "frame_index": 250,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 20.16,
+      "frame_index": 252,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 20.32,
+      "frame_index": 254,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 20.48,
+      "frame_index": 256,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 20.64,
+      "frame_index": 258,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 20.8,
+      "frame_index": 260,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 20.96,
+      "frame_index": 262,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 21.12,
+      "frame_index": 264,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 21.28,
+      "frame_index": 266,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 21.44,
+      "frame_index": 268,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 21.6,
+      "frame_index": 270,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 21.76,
+      "frame_index": 272,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 21.92,
+      "frame_index": 274,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 22.08,
+      "frame_index": 276,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 22.24,
+      "frame_index": 278,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 22.4,
+      "frame_index": 280,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 22.56,
+      "frame_index": 282,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 22.72,
+      "frame_index": 284,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 22.88,
+      "frame_index": 286,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 23.04,
+      "frame_index": 288,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 23.2,
+      "frame_index": 290,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 23.36,
+      "frame_index": 292,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 23.52,
+      "frame_index": 294,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 23.68,
+      "frame_index": 296,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    },
+    {
+      "timestamp": 23.84,
+      "frame_index": 298,
+      "detections": [],
+      "plates": [],
+      "violations": []
+    }
+  ],
+  "violations_detected": [
+    {
+      "id": 867,
+      "type": "Seatbelt Non-compliance",
+      "vehicle": "car",
+      "plate": "AP 55 BR 3726",
+      "confidence": 0.81,
+      "timestamp": "2026-06-22T20:39:34.429553",
+      "annotated_image_path": "/static/uploads/viol_80a231e9_100.jpg"
+    },
+    {
+      "id": 868,
+      "type": "Seatbelt Non-compliance",
+      "vehicle": "car",
+      "plate": "WB 32 CE 3013",
+      "confidence": 0.81,
+      "timestamp": "2026-06-22T20:39:57.227601",
+      "annotated_image_path": "/static/uploads/viol_4f78e11c_192.jpg"
+    },
+    {
+      "id": 869,
+      "type": "Seatbelt Non-compliance",
+      "vehicle": "car",
+      "plate": "KA 31 XW 4752",
+      "confidence": 0.81,
+      "timestamp": "2026-06-22T20:39:58.142120",
+      "annotated_image_path": "/static/uploads/viol_cfe56a1a_196.jpg"
+    },
+    {
+      "id": 870,
+      "type": "Seatbelt Non-compliance",
+      "vehicle": "car",
+      "plate": "GJ 65 LN 2165",
+      "confidence": 0.81,
+      "timestamp": "2026-06-22T20:39:59.735216",
+      "annotated_image_path": "/static/uploads/viol_c0ceef28_200.jpg"
+    },
+    {
+      "id": 871,
+      "type": "Seatbelt Non-compliance",
+      "vehicle": "car",
+      "plate": "WB 83 ZQ 3427",
+      "confidence": 0.81,
+      "timestamp": "2026-06-22T20:40:00.748515",
+      "annotated_image_path": "/static/uploads/viol_f39e3cb1_204.jpg"
+    },
+    {
+      "id": 872,
+      "type": "Seatbelt Non-compliance",
+      "vehicle": "car",
+      "plate": "HR 64 XZ 5649",
+      "confidence": 0.81,
+      "timestamp": "2026-06-22T20:40:01.716750",
+      "annotated_image_path": "/static/uploads/viol_491104c9_206.jpg"
+    },
+    {
+      "id": 873,
+      "type": "Wrong-side Driving",
+      "vehicle": "car",
+      "plate": "HR 64 XZ 5649",
+      "confidence": 0.91,
+      "timestamp": "2026-06-22T20:40:01.746366",
+      "annotated_image_path": "/static/uploads/viol_c4cdcce5_206.jpg"
+    },
+    {
+      "id": 874,
+      "type": "Seatbelt Non-compliance",
+      "vehicle": "car",
+      "plate": "AP 49 UL 7181",
+      "confidence": 0.81,
+      "timestamp": "2026-06-22T20:40:03.859315",
+      "annotated_image_path": "/static/uploads/viol_513f40a4_214.jpg"
+    },
+    {
+      "id": 875,
+      "type": "Illegal Parking",
+      "vehicle": "car",
+      "plate": "AP 49 UL 7181",
+      "confidence": 0.9,
+      "timestamp": "2026-06-22T20:40:03.871251",
+      "annotated_image_path": "/static/uploads/viol_38ab9c0e_214.jpg"
+    },
+    {
+      "id": 876,
+      "type": "Seatbelt Non-compliance",
+      "vehicle": "car",
+      "plate": "MH 46 DS 1722",
+      "confidence": 0.81,
+      "timestamp": "2026-06-22T20:40:04.359536",
+      "annotated_image_path": "/static/uploads/viol_87d35060_220.jpg"
+    },
+    {
+      "id": 877,
+      "type": "Illegal Parking",
+      "vehicle": "car",
+      "plate": "MH 46 DS 1722",
+      "confidence": 0.9,
+      "timestamp": "2026-06-22T20:40:04.372690",
+      "annotated_image_path": "/static/uploads/viol_238a7fde_220.jpg"
+    },
+    {
+      "id": 878,
+      "type": "Seatbelt Non-compliance",
+      "vehicle": "car",
+      "plate": "TN 19 FP 8503",
+      "confidence": 0.81,
+      "timestamp": "2026-06-22T20:40:04.564519",
+      "annotated_image_path": "/static/uploads/viol_e183230c_222.jpg"
+    },
+    {
+      "id": 879,
+      "type": "Seatbelt Non-compliance",
+      "vehicle": "car",
+      "plate": "HR 31 DQ 8941",
+      "confidence": 0.81,
+      "timestamp": "2026-06-22T20:40:04.573177",
+      "annotated_image_path": "/static/uploads/viol_b44d067f_222.jpg"
+    },
+    {
+      "id": 880,
+      "type": "Wrong-side Driving",
+      "vehicle": "car",
+      "plate": "TN 19 FP 8503",
+      "confidence": 0.91,
+      "timestamp": "2026-06-22T20:40:04.590272",
+      "annotated_image_path": "/static/uploads/viol_98a80f6f_222.jpg"
+    },
+    {
+      "id": 881,
+      "type": "Wrong-side Driving",
+      "vehicle": "car",
+      "plate": "AP 64 GZ 3200",
+      "confidence": 0.91,
+      "timestamp": "2026-06-22T20:40:04.869676",
+      "annotated_image_path": "/static/uploads/viol_26d47ecd_224.jpg"
+    },
+    {
+      "id": 882,
+      "type": "Seatbelt Non-compliance",
+      "vehicle": "car",
+      "plate": "DL 54 BM 5101",
+      "confidence": 0.81,
+      "timestamp": "2026-06-22T20:40:05.097522",
+      "annotated_image_path": "/static/uploads/viol_8fe19806_226.jpg"
+    },
+    {
+      "id": 883,
+      "type": "Seatbelt Non-compliance",
+      "vehicle": "car",
+      "plate": "UP 30 XS 8438",
+      "confidence": 0.81,
+      "timestamp": "2026-06-22T20:40:05.341476",
+      "annotated_image_path": "/static/uploads/viol_a1056085_228.jpg"
+    },
+    {
+      "id": 884,
+      "type": "Seatbelt Non-compliance",
+      "vehicle": "car",
+      "plate": "KA 04 LB 8658",
+      "confidence": 0.81,
+      "timestamp": "2026-06-22T20:40:05.586385",
+      "annotated_image_path": "/static/uploads/viol_0ceb7cc8_230.jpg"
+    },
+    {
+      "id": 885,
+      "type": "Seatbelt Non-compliance",
+      "vehicle": "car",
+      "plate": "HR 05 ZA 8856",
+      "confidence": 0.81,
+      "timestamp": "2026-06-22T20:40:05.807074",
+      "annotated_image_path": "/static/uploads/viol_2ed3ec6d_232.jpg"
+    }
+  ]
+}

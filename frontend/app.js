@@ -1370,6 +1370,52 @@ async function uploadVideo(file) {
     previewVid.play();
     
     if (isBrowserDemoMode) {
+        const isSampleVideo = file.name && file.name.toLowerCase().includes("sample_violations");
+        if (isSampleVideo) {
+            try {
+                const response = await fetch("sample_violations_detections.json");
+                if (!response.ok) throw new Error("Detections JSON file not found");
+                const results = await response.json();
+                
+                loading.style.display = "none";
+                document.getElementById("upload-placeholder-view").style.display = "none";
+                document.getElementById("image-display-view").style.display = "flex";
+                
+                startVideoOverlayLoop(results);
+                renderMonitorResults(results);
+                
+                let data = getMockViolations();
+                const baseId = data.length > 0 ? Math.max(...data.map(x => x.id)) + 1 : 1;
+                
+                results.violations_detected.forEach((v, idx) => {
+                    const newViolation = {
+                        id: baseId + idx,
+                        timestamp: new Date().toISOString(),
+                        violation_type: v.type,
+                        vehicle_type: v.vehicle,
+                        license_plate: v.plate,
+                        confidence: v.confidence,
+                        image_path: `/static/sample_traffic_1.jpg`,
+                        annotated_image_path: v.annotated_image_path || `/static/ann_sample_traffic_1.jpg`,
+                        status: "pending"
+                    };
+                    data.unshift(newViolation);
+                });
+                
+                try {
+                    localStorage.setItem("apic_violations", JSON.stringify(data));
+                } catch (e) {
+                    console.warn("Could not write to local storage", e);
+                }
+                
+                loadDashboardData();
+                showToast("Real video demo loaded and analysis complete!", "success");
+                return;
+            } catch (err) {
+                console.error("Failed to load pre-computed detections, falling back to mock:", err);
+            }
+        }
+        
         setTimeout(() => {
             loading.style.display = "none";
             document.getElementById("upload-placeholder-view").style.display = "none";
