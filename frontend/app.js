@@ -865,6 +865,7 @@ function setupFileUpload() {
     const fileInput = document.getElementById("file-upload-input");
     const dropZone = document.getElementById("drop-zone");
     const btnSimulate = document.getElementById("btn-run-simulation");
+    const btnVideoSimulate = document.getElementById("btn-run-video-simulation");
     
     // Clicking dropzone triggers file selector
     dropZone.addEventListener("click", (e) => {
@@ -897,7 +898,7 @@ function setupFileUpload() {
         }
     });
     
-    // Simulate scene
+    // Simulate image scene
     btnSimulate.addEventListener("click", async () => {
         document.getElementById("monitor-loading").style.display = "flex";
         
@@ -941,6 +942,26 @@ function setupFileUpload() {
             document.getElementById("monitor-loading").style.display = "none";
         }
     });
+
+    // Simulate real video scene
+    if (btnVideoSimulate) {
+        btnVideoSimulate.addEventListener("click", async () => {
+            document.getElementById("monitor-loading").style.display = "flex";
+            try {
+                const videoRes = await fetch("/static/sample_violations.mp4");
+                if (!videoRes.ok) {
+                    throw new Error("Video file not found or server offline");
+                }
+                const blob = await videoRes.blob();
+                const file = new File([blob], "sample_violations.mp4", { type: "video/mp4" });
+                uploadFile(file);
+            } catch (err) {
+                console.error("Error fetching simulation video:", err);
+                document.getElementById("monitor-loading").style.display = "none";
+                showToast("Failed to load sample video. Make sure backend server is running.", "error");
+            }
+        });
+    }
 }
 
 async function uploadFile(file) {
