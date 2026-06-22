@@ -1574,8 +1574,26 @@ function startVideoOverlayLoop(results) {
         
         const origWidth = video.videoWidth || 640;
         const origHeight = video.videoHeight || 480;
-        const w_scale = canvas.width / origWidth;
-        const h_scale = canvas.height / origHeight;
+        
+        const videoRatio = origWidth / origHeight;
+        const canvasRatio = canvas.width / canvas.height;
+        
+        let w_scale, h_scale;
+        let xOffset = 0, yOffset = 0;
+        
+        if (canvasRatio > videoRatio) {
+            // Letterboxed on the left/right (narrow video)
+            const videoRenderWidth = canvas.height * videoRatio;
+            xOffset = (canvas.width - videoRenderWidth) / 2;
+            w_scale = videoRenderWidth / origWidth;
+            h_scale = canvas.height / origHeight;
+        } else {
+            // Letterboxed on the top/bottom (wide video)
+            const videoRenderHeight = canvas.width / videoRatio;
+            yOffset = (canvas.height - videoRenderHeight) / 2;
+            w_scale = canvas.width / origWidth;
+            h_scale = videoRenderHeight / origHeight;
+        }
         
         if (activeSettings) {
             const s_start = activeSettings.stop_line.start;
@@ -1583,8 +1601,8 @@ function startVideoOverlayLoop(results) {
             ctx.strokeStyle = activeSettings.traffic_light_state === "Red" ? "#ef4444" : "#10b981";
             ctx.lineWidth = 3;
             ctx.beginPath();
-            ctx.moveTo(s_start[0] * w_scale, s_start[1] * h_scale);
-            ctx.lineTo(s_end[0] * w_scale, s_end[1] * h_scale);
+            ctx.moveTo(s_start[0] * w_scale + xOffset, s_start[1] * h_scale + yOffset);
+            ctx.lineTo(s_end[0] * w_scale + xOffset, s_end[1] * h_scale + yOffset);
             ctx.stroke();
             
             const pts = activeSettings.no_parking_zone;
@@ -1592,9 +1610,9 @@ function startVideoOverlayLoop(results) {
                 ctx.strokeStyle = "#f59e0b";
                 ctx.lineWidth = 2;
                 ctx.beginPath();
-                ctx.moveTo(pts[0][0] * w_scale, pts[0][1] * h_scale);
+                ctx.moveTo(pts[0][0] * w_scale + xOffset, pts[0][1] * h_scale + yOffset);
                 for (let i = 1; i < pts.length; i++) {
-                    ctx.lineTo(pts[i][0] * w_scale, pts[i][1] * h_scale);
+                    ctx.lineTo(pts[i][0] * w_scale + xOffset, pts[i][1] * h_scale + yOffset);
                 }
                 ctx.closePath();
                 ctx.stroke();
@@ -1605,35 +1623,50 @@ function startVideoOverlayLoop(results) {
         
         closestFrame.detections.forEach(det => {
             const [x, y, w, h] = det.bbox;
+            const rx = x * w_scale + xOffset;
+            const ry = y * h_scale + yOffset;
+            const rw = w * w_scale;
+            const rh = h * h_scale;
+            
             ctx.strokeStyle = "#f59e0b"; 
             ctx.lineWidth = 2;
-            ctx.strokeRect(x * w_scale, y * h_scale, w * w_scale, h * h_scale);
+            ctx.strokeRect(rx, ry, rw, rh);
             
             ctx.fillStyle = "#f59e0b";
             ctx.font = `bold ${fontSize}px Outfit, sans-serif`;
-            ctx.fillText(`${det.class}`, x * w_scale + 4, y * h_scale - 4);
+            ctx.fillText(`${det.class}`, rx + 4, ry - 4);
         });
         
         closestFrame.plates.forEach(pl => {
             const [x, y, w, h] = pl.bbox;
+            const rx = x * w_scale + xOffset;
+            const ry = y * h_scale + yOffset;
+            const rw = w * w_scale;
+            const rh = h * h_scale;
+            
             ctx.strokeStyle = "#10b981"; 
             ctx.lineWidth = 2;
-            ctx.strokeRect(x * w_scale, y * h_scale, w * w_scale, h * h_scale);
+            ctx.strokeRect(rx, ry, rw, rh);
             
             ctx.fillStyle = "#10b981";
             ctx.font = `bold ${fontSize - 2}px Outfit, sans-serif`;
-            ctx.fillText("PLATE", x * w_scale + 2, y * h_scale - 4);
+            ctx.fillText("PLATE", rx + 2, ry - 4);
         });
         
         closestFrame.violations.forEach(viol => {
             const [x, y, w, h] = viol.target_bbox;
+            const rx = x * w_scale + xOffset;
+            const ry = y * h_scale + yOffset;
+            const rw = w * w_scale;
+            const rh = h * h_scale;
+            
             ctx.strokeStyle = "#ef4444"; 
             ctx.lineWidth = 3;
-            ctx.strokeRect(x * w_scale, y * h_scale, w * w_scale, h * h_scale);
+            ctx.strokeRect(rx, ry, rw, rh);
             
             ctx.fillStyle = "#ef4444";
             ctx.font = `bold ${fontSize}px Outfit, sans-serif`;
-            ctx.fillText(`VIOLATION: ${viol.type}`, x * w_scale + 4, y * h_scale - 10);
+            ctx.fillText(`VIOLATION: ${viol.type}`, rx + 4, ry - 10);
         });
         
     }, 1000 / 30);
