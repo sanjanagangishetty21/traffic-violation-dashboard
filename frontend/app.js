@@ -45,10 +45,11 @@ let noParkingPoints = [];
 let charts = {};
 
 let isBrowserDemoMode = false;
-if (window.location.protocol === "file:") {
+if (window.location.protocol === "file:" || window.location.hostname.includes("vercel.app") || window.location.hostname.includes("github.io")) {
     isBrowserDemoMode = true;
-    console.log("[APIC-TV] Browser-only simulation mode active (file protocol detected).");
+    console.log("[APIC-TV] Browser-only simulation mode active (static/Vercel hosting detected).");
 }
+
 
 function getMockViolations() {
     let list = localStorage.getItem("apic_violations");
