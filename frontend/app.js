@@ -1668,39 +1668,57 @@ function startVideoOverlayLoop(results) {
         
         const fontSize = Math.max(10, Math.round(canvas.width / 50));
         
-        closestFrame.detections.forEach(det => {
-            const [x, y, w, h] = det.bbox;
-            const rx = x * w_scale + xOffset;
-            const ry = y * h_scale + yOffset;
-            const rw = w * w_scale;
-            const rh = h * h_scale;
-            
-            ctx.strokeStyle = "#f59e0b"; 
-            ctx.lineWidth = 2;
-            ctx.strokeRect(rx, ry, rw, rh);
-            
-            ctx.fillStyle = "#f59e0b";
-            ctx.font = `bold ${fontSize}px Outfit, sans-serif`;
-            ctx.fillText(`${det.class}`, rx + 4, ry - 4);
-        });
+        const showVehicles = document.getElementById("toggle-show-vehicles")?.checked ?? true;
+        const showPlates = document.getElementById("toggle-show-plates")?.checked ?? true;
+        const showRedLight = document.getElementById("toggle-red-light")?.checked ?? true;
+        const showWrongSide = document.getElementById("toggle-wrong-side")?.checked ?? true;
+        const showParking = document.getElementById("toggle-illegal-parking")?.checked ?? true;
+        const showHelmet = document.getElementById("toggle-helmet")?.checked ?? true;
+        const showSeatbelt = document.getElementById("toggle-seatbelt")?.checked ?? true;
+
+        if (showVehicles) {
+            closestFrame.detections.forEach(det => {
+                const [x, y, w, h] = det.bbox;
+                const rx = x * w_scale + xOffset;
+                const ry = y * h_scale + yOffset;
+                const rw = w * w_scale;
+                const rh = h * h_scale;
+                
+                ctx.strokeStyle = "#f59e0b"; 
+                ctx.lineWidth = 2;
+                ctx.strokeRect(rx, ry, rw, rh);
+                
+                ctx.fillStyle = "#f59e0b";
+                ctx.font = `bold ${fontSize}px Outfit, sans-serif`;
+                ctx.fillText(`${det.class}`, rx + 4, ry - 4);
+            });
+        }
         
-        closestFrame.plates.forEach(pl => {
-            const [x, y, w, h] = pl.bbox;
-            const rx = x * w_scale + xOffset;
-            const ry = y * h_scale + yOffset;
-            const rw = w * w_scale;
-            const rh = h * h_scale;
-            
-            ctx.strokeStyle = "#10b981"; 
-            ctx.lineWidth = 2;
-            ctx.strokeRect(rx, ry, rw, rh);
-            
-            ctx.fillStyle = "#10b981";
-            ctx.font = `bold ${fontSize - 2}px Outfit, sans-serif`;
-            ctx.fillText("PLATE", rx + 2, ry - 4);
-        });
+        if (showPlates) {
+            closestFrame.plates.forEach(pl => {
+                const [x, y, w, h] = pl.bbox;
+                const rx = x * w_scale + xOffset;
+                const ry = y * h_scale + yOffset;
+                const rw = w * w_scale;
+                const rh = h * h_scale;
+                
+                ctx.strokeStyle = "#10b981"; 
+                ctx.lineWidth = 2;
+                ctx.strokeRect(rx, ry, rw, rh);
+                
+                ctx.fillStyle = "#10b981";
+                ctx.font = `bold ${fontSize - 2}px Outfit, sans-serif`;
+                ctx.fillText("PLATE", rx + 2, ry - 4);
+            });
+        }
         
         closestFrame.violations.forEach(viol => {
+            if (viol.type === "Red-light Violation" && !showRedLight) return;
+            if (viol.type === "Wrong-side Driving" && !showWrongSide) return;
+            if (viol.type === "Illegal Parking" && !showParking) return;
+            if (viol.type === "Helmet Non-compliance" && !showHelmet) return;
+            if (viol.type === "Seatbelt Non-compliance" && !showSeatbelt) return;
+
             const [x, y, w, h] = viol.target_bbox;
             const rx = x * w_scale + xOffset;
             const ry = y * h_scale + yOffset;
@@ -1715,6 +1733,7 @@ function startVideoOverlayLoop(results) {
             ctx.font = `bold ${fontSize}px Outfit, sans-serif`;
             ctx.fillText(`VIOLATION: ${viol.type}`, rx + 4, ry - 10);
         });
+
         
     }, 1000 / 30);
 }

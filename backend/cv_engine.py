@@ -645,9 +645,10 @@ class TrafficCVEngine:
         
         # Check if it is a special demo/test scene for presentations
         filename = filename_hint.lower()
-        is_wrong_side_scene = any(h in filename for h in ["7bc4b01e", "ec1a59e0", "98b58829"]) or any(kw in filename for kw in ["wrong", "side", "helmet"])
-        is_triple_riding_scene = any(h in filename for h in ["dd3cd5f1", "100e71f7", "73cc6e5d"]) or any(kw in filename for kw in ["triple", "three"])
+        is_wrong_side_scene = any(h in filename for h in ["7bc4b01e", "ec1a59e0", "98b58829"])
+        is_triple_riding_scene = any(h in filename for h in ["dd3cd5f1", "100e71f7", "73cc6e5d"])
         is_demo_scene = "traffic_violations_test_scene" in filename
+
         
         is_intercepted = is_demo_scene or is_wrong_side_scene or is_triple_riding_scene
         

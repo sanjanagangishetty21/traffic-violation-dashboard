@@ -235,7 +235,50 @@
                                     </label>
                                 </div>
                             </div>
+
+                            <!-- Active Overlays Filter toggles -->
+                            <div class="preprocessing-bar" style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 15px;">
+                                <span class="bar-title"><i class="fa-solid fa-eye"></i> Active AI Overlays & Violations:</span>
+                                <div class="filter-toggles" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px;">
+                                    <label class="filter-toggle">
+                                        <input type="checkbox" id="toggle-show-vehicles" checked>
+                                        <span class="toggle-slider"></span>
+                                        Show Vehicles (Orange)
+                                    </label>
+                                    <label class="filter-toggle">
+                                        <input type="checkbox" id="toggle-show-plates" checked>
+                                        <span class="toggle-slider"></span>
+                                        Show Plates (Green)
+                                    </label>
+                                    <label class="filter-toggle">
+                                        <input type="checkbox" id="toggle-red-light" checked>
+                                        <span class="toggle-slider"></span>
+                                        Red-light Violation
+                                    </label>
+                                    <label class="filter-toggle">
+                                        <input type="checkbox" id="toggle-wrong-side" checked>
+                                        <span class="toggle-slider"></span>
+                                        Wrong-side Driving
+                                    </label>
+                                    <label class="filter-toggle">
+                                        <input type="checkbox" id="toggle-illegal-parking" checked>
+                                        <span class="toggle-slider"></span>
+                                        Illegal Parking
+                                    </label>
+                                    <label class="filter-toggle">
+                                        <input type="checkbox" id="toggle-helmet" checked>
+                                        <span class="toggle-slider"></span>
+                                        Helmet Detection
+                                    </label>
+                                    <label class="filter-toggle">
+                                        <input type="checkbox" id="toggle-seatbelt" checked>
+                                        <span class="toggle-slider"></span>
+                                        Seatbelt Detection
+                                    </label>
+                                </div>
+                            </div>
                         </div>
+
 
                         <!-- Right Panel: Detections & OCR -->
                         <div class="monitor-sidebar glass">
