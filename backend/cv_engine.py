@@ -543,21 +543,7 @@ class TrafficCVEngine:
 
     # --- PIPELINE ---
 
-    def process_image(self, img_path, settings=None):
-        """
-        Full pipeline:
-        1. Load image
-        2. Preprocess (according to settings)
-        3. Detect vehicles & riders
-        4. Apply violation heuristics
-        5. Detect license plates
-        6. Perform OCR
-        7. Annotate & Save output
-        """
-        if not os.path.exists(img_path):
-            raise FileNotFoundError(f"Image not found: {img_path}")
-            
-        image = cv2.imread(img_path)
+    def process_frame(self, image, filename_hint="", settings=None):
         h, w = image.shape[:2]
         
         # Load user configuration or default settings
@@ -580,7 +566,7 @@ class TrafficCVEngine:
         )
         
         # Check if it is a special demo/test scene for presentations
-        filename = os.path.basename(img_path).lower()
+        filename = filename_hint.lower()
         is_wrong_side_scene = any(h in filename for h in ["7bc4b01e", "ec1a59e0", "98b58829"]) or any(kw in filename for kw in ["wrong", "side", "helmet"])
         is_triple_riding_scene = any(h in filename for h in ["dd3cd5f1", "100e71f7", "73cc6e5d"]) or any(kw in filename for kw in ["triple", "three"])
         is_demo_scene = "traffic_violations_test_scene" in filename
@@ -704,8 +690,8 @@ class TrafficCVEngine:
                 
         # Draw settings overlays (Stop lines, parking zones)
         # 1. Stop Line
-        s_start = tuple(settings["stop_line"]["start"])
-        s_end = tuple(settings["stop_line"]["end"])
+        s_start = tuple(int(x) for x in settings["stop_line"]["start"])
+        s_end = tuple(int(x) for x in settings["stop_line"]["end"])
         cv2.line(annotated_image, s_start, s_end, (0, 0, 255) if settings["traffic_light_state"] == "Red" else (0, 255, 0), 3)
         cv2.putText(annotated_image, "STOP LINE", (s_start[0], s_start[1] - 8), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
         
@@ -722,18 +708,33 @@ class TrafficCVEngine:
             cv2.rectangle(annotated_image, (vx, vy), (vx + vw, vy + vh), (0, 0, 255), 3) # Crimson Red
             cv2.putText(annotated_image, f"VIOLATION: {vtype}", (vx, vy - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
             
-        # Save annotated image
+        return {
+            "detections": detections,
+            "violations": violations,
+            "plates": plates_info,
+            "annotated_image": annotated_image
+        }
+
+    def process_image(self, img_path, settings=None):
+        if not os.path.exists(img_path):
+            raise FileNotFoundError(f"Image not found: {img_path}")
+            
+        image = cv2.imread(img_path)
         filename = os.path.basename(img_path)
+        
+        res = self.process_frame(image, filename_hint=filename, settings=settings)
+        
+        # Save annotated image
         ann_filename = f"ann_{filename}"
         ann_path = os.path.join(STATIC_DIR, ann_filename)
-        cv2.imwrite(ann_path, annotated_image)
+        cv2.imwrite(ann_path, res["annotated_image"])
         
         # Convert annotated path to static endpoint relative path
         rel_ann_path = f"/static/{ann_filename}"
         
         return {
-            "detections": detections,
-            "violations": violations,
-            "plates": plates_info,
+            "detections": res["detections"],
+            "violations": res["violations"],
+            "plates": res["plates"],
             "annotated_image_url": rel_ann_path
         }

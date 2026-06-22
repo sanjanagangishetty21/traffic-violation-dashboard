@@ -170,9 +170,9 @@
                             <div class="workspace-toolbar">
                                 <div class="toolbar-controls">
                                     <label class="btn btn-sm btn-primary" for="file-upload-input">
-                                        <i class="fa-solid fa-file-arrow-up"></i> Upload Traffic Image
+                                        <i class="fa-solid fa-file-arrow-up"></i> Upload Image/Video
                                     </label>
-                                    <input type="file" id="file-upload-input" accept="image/*" style="display: none;">
+                                    <input type="file" id="file-upload-input" accept="image/*,video/*" style="display: none;">
                                     
                                     <button class="btn btn-sm btn-outline" id="btn-run-simulation">
                                         <i class="fa-solid fa-wand-magic-sparkles"></i> Load Demo Scene
@@ -189,13 +189,14 @@
                             <div class="image-viewer-container" id="drop-zone">
                                 <div class="upload-placeholder" id="upload-placeholder-view">
                                     <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
-                                    <h3>Drag & Drop Traffic Image Here</h3>
-                                    <p>Or click "Upload Traffic Image" to select a file from your system</p>
-                                    <div class="file-limits">Supports JPG, PNG (Max 15MB)</div>
+                                    <h3>Drag & Drop Image or Video Here</h3>
+                                    <p>Or click "Upload Image/Video" to select a file from your system</p>
+                                    <div class="file-limits">Supports JPG, PNG, MP4, WebM (Max 15MB)</div>
                                 </div>
-                                <div class="image-display-wrapper" id="image-display-view" style="display: none;">
-                                    <img id="monitor-preview-img" src="" alt="Traffic Stream">
-                                    <!-- Canvas overlays if drawn -->
+                                <div class="image-display-wrapper" id="image-display-view" style="display: none; position: relative;">
+                                    <img id="monitor-preview-img" src="" alt="Traffic Stream" style="width: 100%; max-height: 100%; object-fit: contain;">
+                                    <video id="monitor-preview-video" style="display: none; width: 100%; max-height: 100%; object-fit: contain;" autoplay loop muted playsinline></video>
+                                    <canvas id="monitor-video-canvas" style="display: none; position: absolute; top: 0; left: 0; pointer-events: none; width: 100%; height: 100%;"></canvas>
                                 </div>
                                 
                                 <!-- Loading overlay -->

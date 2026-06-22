@@ -181,11 +181,163 @@ async def api_process_image(
     shadow: bool = Query(False),
     dehaze: bool = Query(False)
 ):
+    from datetime import datetime
     # Save uploaded file
     file_ext = os.path.splitext(file.filename)[1]
     temp_filename = f"upload_{os.urandom(4).hex()}{file_ext}"
     temp_filepath = os.path.join(UPLOAD_DIR, temp_filename)
     
+    # Check if it is a video
+    is_video = (file.content_type and file.content_type.startswith("video/")) or any(file.filename.lower().endswith(ext) for ext in [".mp4", ".webm", ".avi", ".mov", ".mkv"])
+    
+    if is_video:
+        try:
+            with open(temp_filepath, "wb") as buffer:
+                shutil.copyfileobj(file.file, buffer)
+                
+            # Get active settings from database
+            settings = get_settings(camera)
+            settings["filters"] = {
+                "low_light": low_light,
+                "sharpen": sharpen,
+                "shadow": shadow,
+                "dehaze": dehaze
+            }
+            
+            # Read video file
+            cap = cv2.VideoCapture(temp_filepath)
+            if not cap.isOpened():
+                raise Exception("Could not open video file.")
+                
+            fps = cap.get(cv2.CAP_PROP_FPS)
+            if fps <= 0 or np.isnan(fps):
+                fps = 30.0
+            total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+            
+            # Sample rate: target around 5 frames per second
+            sample_interval = max(1, int(fps / 5))
+            
+            detections_by_frame = []
+            logged_violations = []
+            logged_violation_types = set() # Dedup violations: store (type, license_plate)
+            
+            frame_idx = 0
+            while cap.isOpened():
+                ret, frame = cap.read()
+                if not ret:
+                    break
+                    
+                # Safe limit to prevent timeouts/infinite loops (max 150 sampled frames)
+                if len(detections_by_frame) >= 150:
+                    break
+                    
+                if frame_idx % sample_interval == 0:
+                    # Run frame processing
+                    res = cv_engine.process_frame(frame, filename_hint=file.filename, settings=settings)
+                    
+                    frame_time = float(frame_idx) / fps
+                    
+                    frame_detections = []
+                    for det in res["detections"]:
+                        frame_detections.append({
+                            "class": det["class"],
+                            "confidence": det["confidence"],
+                            "bbox": det["bbox"]
+                        })
+                        
+                    frame_plates = []
+                    for pl in res["plates"]:
+                        frame_plates.append({
+                            "bbox": pl["bbox"],
+                            "text": pl["text"],
+                            "confidence": pl["confidence"]
+                        })
+                        
+                    frame_violations = []
+                    for viol in res["violations"]:
+                        frame_violations.append({
+                            "type": viol["type"],
+                            "confidence": viol["confidence"],
+                            "target_bbox": viol["target_bbox"],
+                            "details": viol.get("details", "")
+                        })
+                        
+                        # Find plate for this violation
+                        v_bbox = viol["target_bbox"]
+                        plate_text = "UNKNOWN"
+                        for pl in res["plates"]:
+                            px, py, pw, ph = pl["bbox"]
+                            if v_bbox[0] <= px <= v_bbox[0] + v_bbox[2] and v_bbox[1] <= py <= v_bbox[1] + v_bbox[3]:
+                                plate_text = pl["text"]
+                                break
+                                
+                        # Dedup violations within this video to prevent spamming the database
+                        dedup_key = (viol["type"], plate_text)
+                        if dedup_key not in logged_violation_types:
+                            logged_violation_types.add(dedup_key)
+                            
+                            # Save this specific frame containing the violation as an image
+                            v_filename = f"viol_{os.urandom(4).hex()}_{frame_idx}.jpg"
+                            v_filepath = os.path.join(UPLOAD_DIR, v_filename)
+                            
+                            cv2.imwrite(v_filepath, res["annotated_image"])
+                            
+                            rel_orig_path = f"/static/uploads/{temp_filename}"
+                            rel_ann_path = f"/static/uploads/{v_filename}"
+                            
+                            v_class = "motorcycle" if "Riding" in viol["type"] or "Helmet" in viol["type"] else "car"
+                            
+                            violation_id = add_violation(
+                                violation_type=viol["type"],
+                                vehicle_type=v_class,
+                                license_plate=plate_text,
+                                confidence=viol["confidence"],
+                                image_path=rel_orig_path,
+                                annotated_image_path=rel_ann_path
+                            )
+                            
+                            logged_violations.append({
+                                "id": violation_id,
+                                "type": viol["type"],
+                                "vehicle": v_class,
+                                "plate": plate_text,
+                                "confidence": viol["confidence"],
+                                "timestamp": datetime.now().isoformat(),
+                                "annotated_image_path": rel_ann_path
+                            })
+                            
+                    detections_by_frame.append({
+                        "timestamp": frame_time,
+                        "frame_index": frame_idx,
+                        "detections": frame_detections,
+                        "plates": frame_plates,
+                        "violations": frame_violations
+                    })
+                    
+                frame_idx += 1
+                
+            cap.release()
+            
+            # Clean up temp file
+            if os.path.exists(temp_filepath):
+                os.remove(temp_filepath)
+                
+            return {
+                "status": "success",
+                "isVideo": True,
+                "duration": total_frames / fps if fps > 0 else 0,
+                "fps": fps,
+                "detections_count": len(detections_by_frame),
+                "detections_by_frame": detections_by_frame,
+                "violations_detected": logged_violations
+            }
+            
+        except Exception as e:
+            if os.path.exists(temp_filepath):
+                os.remove(temp_filepath)
+            raise HTTPException(status_code=500, detail=f"Video processing failed: {str(e)}")
+            
+    # Existing image processing pipeline
     try:
         with open(temp_filepath, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)

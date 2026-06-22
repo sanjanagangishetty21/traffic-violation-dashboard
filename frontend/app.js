@@ -519,6 +519,8 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // --- ROUTING / VIEW NAVIGATION ---
+let videoPlayInterval = null;
+
 function setupNavigation() {
     const menuItems = document.querySelectorAll(".menu-item");
     menuItems.forEach(item => {
@@ -535,6 +537,14 @@ function setupNavigation() {
             document.getElementById(`panel-${tabName}`).classList.add("active");
             
             currentTab = tabName;
+            
+            // Pause video if switching tabs
+            if (tabName !== "monitor") {
+                const previewVid = document.getElementById("monitor-preview-video");
+                if (previewVid && !previewVid.paused) {
+                    previewVid.pause();
+                }
+            }
             
             // Load specific panel data
             if (tabName === "dashboard") {
@@ -934,6 +944,24 @@ function setupFileUpload() {
 }
 
 async function uploadFile(file) {
+    // Check if the uploaded file is a video
+    if (file.type.startsWith("video/") || /\.(mp4|webm|avi|mov|mkv)$/i.test(file.name)) {
+        return uploadVideo(file);
+    }
+    
+    // Stop any active video playback and clear interval
+    if (videoPlayInterval) {
+        clearInterval(videoPlayInterval);
+        videoPlayInterval = null;
+    }
+    
+    const previewImg = document.getElementById("monitor-preview-img");
+    const previewVid = document.getElementById("monitor-preview-video");
+    const videoCanvas = document.getElementById("monitor-video-canvas");
+    if (previewVid) previewVid.style.display = "none";
+    if (videoCanvas) videoCanvas.style.display = "none";
+    if (previewImg) previewImg.style.display = "block";
+
     const loading = document.getElementById("monitor-loading");
     loading.style.display = "flex";
     
@@ -1299,6 +1327,303 @@ async function uploadFile(file) {
         console.error("File upload failed:", err);
         showToast("Server connection failed. Make sure FastAPI server is running.", "error");
     }
+}
+
+async function uploadVideo(file) {
+    const loading = document.getElementById("monitor-loading");
+    loading.style.display = "flex";
+    
+    if (videoPlayInterval) {
+        clearInterval(videoPlayInterval);
+        videoPlayInterval = null;
+    }
+    
+    const previewImg = document.getElementById("monitor-preview-img");
+    const previewVid = document.getElementById("monitor-preview-video");
+    const videoCanvas = document.getElementById("monitor-video-canvas");
+    
+    previewImg.style.display = "none";
+    previewVid.style.display = "block";
+    videoCanvas.style.display = "block";
+    
+    const lowLight = document.getElementById("filter-lowlight").checked;
+    const dehaze = document.getElementById("filter-dehaze").checked;
+    const shadow = document.getElementById("filter-shadow").checked;
+    const sharpen = document.getElementById("filter-sharpen").checked;
+    
+    const objectUrl = URL.createObjectURL(file);
+    previewVid.src = objectUrl;
+    previewVid.load();
+    previewVid.play();
+    
+    if (isBrowserDemoMode) {
+        setTimeout(() => {
+            loading.style.display = "none";
+            document.getElementById("upload-placeholder-view").style.display = "none";
+            document.getElementById("image-display-view").style.display = "flex";
+            
+            const duration = 10; 
+            const fps = 30;
+            const detections_by_frame = [];
+            
+            const vehicles = [
+                { id: 1, class: "car", plate: "KA 03 MM 8890", speed: 1.8, start_x: 200, start_y: 100, is_violating: true, violation_type: "Red-light Violation" },
+                { id: 2, class: "motorcycle", plate: "DL 3C AM 5928", speed: 2.2, start_x: 420, start_y: 80, is_violating: true, violation_type: "Triple Riding" },
+                { id: 3, class: "car", plate: "MH 12 GR 8890", speed: 0, start_x: 120, start_y: 380, is_violating: true, violation_type: "Illegal Parking" }
+            ];
+            
+            let loggedViolationTypes = new Set();
+            let newViolationsList = [];
+            let data = getMockViolations();
+            const baseId = data.length > 0 ? Math.max(...data.map(x => x.id)) + 1 : 1;
+            
+            for (let f = 0; f < duration * 5; f++) {
+                const t = f / 5.0; 
+                const frame_dets = [];
+                const frame_plates = [];
+                const frame_viols = [];
+                
+                vehicles.forEach((veh) => {
+                    let x = veh.start_x;
+                    let y = veh.start_y + (veh.speed * t * 45); 
+                    
+                    if (y > 600) return;
+                    
+                    const w = veh.class === "car" ? 180 : 100;
+                    const h = veh.class === "car" ? 120 : 100;
+                    const bbox = [Math.round(x), Math.round(y), w, h];
+                    
+                    frame_dets.push({
+                        class: veh.class,
+                        confidence: 0.92,
+                        bbox: bbox
+                    });
+                    
+                    const px = Math.round(x + w * 0.35);
+                    const py = Math.round(y + h * 0.72);
+                    const pw = Math.round(w * 0.4);
+                    const ph = Math.round(h * 0.18);
+                    
+                    frame_plates.push({
+                        bbox: [px, py, pw, ph],
+                        text: veh.plate,
+                        confidence: 0.94
+                    });
+                    
+                    let is_active_violation = false;
+                    if (veh.violation_type === "Red-light Violation" && y > 380 && activeSettings.traffic_light_state === "Red") {
+                        is_active_violation = true;
+                    } else if (veh.violation_type === "Triple Riding") {
+                        is_active_violation = true; 
+                    } else if (veh.violation_type === "Illegal Parking" && t > 1.0) {
+                        is_active_violation = true; 
+                    }
+                    
+                    if (is_active_violation) {
+                        frame_viols.push({
+                            type: veh.violation_type,
+                            confidence: 0.94,
+                            target_bbox: bbox,
+                            details: `Detected ${veh.violation_type} during video playback.`
+                        });
+                        
+                        if (!loggedViolationTypes.has(veh.violation_type)) {
+                            loggedViolationTypes.add(veh.violation_type);
+                            
+                            const newId = baseId + newViolationsList.length;
+                            const newViolation = {
+                                id: newId,
+                                timestamp: new Date().toISOString(),
+                                violation_type: veh.violation_type,
+                                vehicle_type: veh.class,
+                                license_plate: veh.plate,
+                                confidence: 0.94,
+                                image_path: `/static/sample_traffic_1.jpg`,
+                                annotated_image_path: `/static/ann_sample_traffic_1.jpg`,
+                                status: "pending"
+                            };
+                            
+                            newViolationsList.push({
+                                id: newId,
+                                type: veh.violation_type,
+                                vehicle: veh.class,
+                                plate: veh.plate,
+                                confidence: 0.94
+                            });
+                            
+                            data.unshift(newViolation);
+                        }
+                    }
+                });
+                
+                detections_by_frame.push({
+                    timestamp: t,
+                    detections: frame_dets,
+                    plates: frame_plates,
+                    violations: frame_viols
+                });
+            }
+            
+            try {
+                localStorage.setItem("apic_violations", JSON.stringify(data));
+            } catch (e) {
+                console.warn("Could not write to local storage", e);
+            }
+            
+            const results = {
+                status: "success",
+                isVideo: true,
+                duration: duration,
+                fps: fps,
+                detections_count: detections_by_frame.length,
+                detections_by_frame: detections_by_frame,
+                violations_detected: newViolationsList,
+                license_plates: newViolationsList.map(v => v.plate).filter(p => p !== "UNKNOWN")
+            };
+            
+            startVideoOverlayLoop(results);
+            renderMonitorResults(results);
+            loadDashboardData();
+            showToast("Video simulated and analysis complete!", "success");
+        }, 1500);
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append("file", file);
+    
+    const queryParams = `?camera=${currentCamera}&low_light=${lowLight}&dehaze=${dehaze}&shadow=${shadow}&sharpen=${sharpen}`;
+    
+    try {
+        const res = await fetch(`${API_BASE}/process${queryParams}`, {
+            method: "POST",
+            body: formData
+        });
+        
+        const results = await res.json();
+        loading.style.display = "none";
+        
+        if (results.status === "success" && results.isVideo) {
+            document.getElementById("upload-placeholder-view").style.display = "none";
+            document.getElementById("image-display-view").style.display = "flex";
+            
+            startVideoOverlayLoop(results);
+            renderMonitorResults(results);
+            loadDashboardData();
+            showToast("Video processing completed successfully!", "success");
+        } else {
+            showToast(`Error processing video: ${results.message || "Invalid response"}`, "error");
+        }
+    } catch (err) {
+        loading.style.display = "none";
+        console.error("Video upload failed:", err);
+        showToast("Server connection failed. Make sure FastAPI server is running.", "error");
+    }
+}
+
+function startVideoOverlayLoop(results) {
+    const video = document.getElementById("monitor-preview-video");
+    const canvas = document.getElementById("monitor-video-canvas");
+    const ctx = canvas.getContext("2d");
+    
+    const syncCanvasSize = () => {
+        canvas.width = video.clientWidth || 640;
+        canvas.height = video.clientHeight || 480;
+    };
+    
+    video.removeEventListener("play", syncCanvasSize);
+    video.addEventListener("play", syncCanvasSize);
+    syncCanvasSize();
+    
+    if (videoPlayInterval) {
+        clearInterval(videoPlayInterval);
+    }
+    
+    videoPlayInterval = setInterval(() => {
+        if (video.paused || video.ended) return;
+        
+        const t = video.currentTime;
+        const frames = results.detections_by_frame;
+        if (!frames || frames.length === 0) return;
+        
+        let closestFrame = frames[0];
+        let minDiff = Math.abs(t - closestFrame.timestamp);
+        
+        for (let i = 1; i < frames.length; i++) {
+            const diff = Math.abs(t - frames[i].timestamp);
+            if (diff < minDiff) {
+                minDiff = diff;
+                closestFrame = frames[i];
+            }
+        }
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        const origWidth = video.videoWidth || 640;
+        const origHeight = video.videoHeight || 480;
+        const w_scale = canvas.width / origWidth;
+        const h_scale = canvas.height / origHeight;
+        
+        if (activeSettings) {
+            const s_start = activeSettings.stop_line.start;
+            const s_end = activeSettings.stop_line.end;
+            ctx.strokeStyle = activeSettings.traffic_light_state === "Red" ? "#ef4444" : "#10b981";
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(s_start[0] * w_scale, s_start[1] * h_scale);
+            ctx.lineTo(s_end[0] * w_scale, s_end[1] * h_scale);
+            ctx.stroke();
+            
+            const pts = activeSettings.no_parking_zone;
+            if (pts && pts.length > 2) {
+                ctx.strokeStyle = "#f59e0b";
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(pts[0][0] * w_scale, pts[0][1] * h_scale);
+                for (let i = 1; i < pts.length; i++) {
+                    ctx.lineTo(pts[i][0] * w_scale, pts[i][1] * h_scale);
+                }
+                ctx.closePath();
+                ctx.stroke();
+            }
+        }
+        
+        const fontSize = Math.max(10, Math.round(canvas.width / 50));
+        
+        closestFrame.detections.forEach(det => {
+            const [x, y, w, h] = det.bbox;
+            ctx.strokeStyle = "#f59e0b"; 
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x * w_scale, y * h_scale, w * w_scale, h * h_scale);
+            
+            ctx.fillStyle = "#f59e0b";
+            ctx.font = `bold ${fontSize}px Outfit, sans-serif`;
+            ctx.fillText(`${det.class}`, x * w_scale + 4, y * h_scale - 4);
+        });
+        
+        closestFrame.plates.forEach(pl => {
+            const [x, y, w, h] = pl.bbox;
+            ctx.strokeStyle = "#10b981"; 
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x * w_scale, y * h_scale, w * w_scale, h * h_scale);
+            
+            ctx.fillStyle = "#10b981";
+            ctx.font = `bold ${fontSize - 2}px Outfit, sans-serif`;
+            ctx.fillText("PLATE", x * w_scale + 2, y * h_scale - 4);
+        });
+        
+        closestFrame.violations.forEach(viol => {
+            const [x, y, w, h] = viol.target_bbox;
+            ctx.strokeStyle = "#ef4444"; 
+            ctx.lineWidth = 3;
+            ctx.strokeRect(x * w_scale, y * h_scale, w * w_scale, h * h_scale);
+            
+            ctx.fillStyle = "#ef4444";
+            ctx.font = `bold ${fontSize}px Outfit, sans-serif`;
+            ctx.fillText(`VIOLATION: ${viol.type}`, x * w_scale + 4, y * h_scale - 10);
+        });
+        
+    }, 1000 / 30);
 }
 
 function renderMonitorResults(data) {
