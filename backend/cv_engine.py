@@ -299,68 +299,84 @@ class TrafficCVEngine:
     def check_helmet_compliance(self, detections, image):
         """
         Helmet Violation: A person riding a motorcycle does not have a helmet.
-        Heuristic: Analyze the top 20% of the rider's bounding box.
-        Check color saturation and circle structures (using Hough circles or color variance).
-        For this prototype, we compute head contrast and color profiles.
         """
         motorcycles = [d for d in detections if d["class"] == "motorcycle"]
         people = [d for d in detections if d["class"] == "person"]
         violations = []
         
-        # Identify riders: people who overlap a motorcycle
+        riders_to_check = []
+        
+        # 1. Check people overlapping motorcycles
+        checked_mcs = set()
         for p in people:
             px, py, pw, ph = p["bbox"]
-            is_rider = False
-            for mc in motorcycles:
+            for mc_idx, mc in enumerate(motorcycles):
                 mx, my, mw, mh = mc["bbox"]
                 x_overlap = max(0, min(mx + mw, px + pw) - max(mx, px))
                 y_overlap = max(0, min(my + mh, py + ph) - max(my, py))
                 if (x_overlap * y_overlap) / (pw * ph) > 0.3:
-                    is_rider = True
+                    riders_to_check.append({
+                        "bbox": [px, py, pw, ph],
+                        "mc_bbox": mc["bbox"],
+                        "is_synthesized": False
+                    })
+                    checked_mcs.add(mc_idx)
                     break
                     
-            if is_rider:
-                # Crop the head region (top 20% of person bounding box)
+        # 2. For motorcycles without separate person detection, synthesize the head region
+        for mc_idx, mc in enumerate(motorcycles):
+            if mc_idx not in checked_mcs:
+                mx, my, mw, mh = mc["bbox"]
+                riders_to_check.append({
+                    "bbox": [mx, my, mw, int(mh * 0.5)],
+                    "mc_bbox": mc["bbox"],
+                    "is_synthesized": True
+                })
+                
+        for rider in riders_to_check:
+            px, py, pw, ph = rider["bbox"]
+            mc_bbox = rider["mc_bbox"]
+            is_synthesized = rider["is_synthesized"]
+            
+            # Crop the head region
+            if is_synthesized:
+                head_h = int(ph * 0.44)
+                head_w = int(pw * 0.8)
+                head_x = px + int(pw * 0.1)
+                head_y = py
+            else:
                 head_h = int(ph * 0.22)
                 head_w = int(pw * 0.8)
                 head_x = px + int(pw * 0.1)
                 head_y = py
                 
-                img_h, img_w = image.shape[:2]
-                head_x = max(0, head_x)
-                head_y = max(0, head_y)
-                head_w = min(head_w, img_w - head_x)
-                head_h = min(head_h, img_h - head_y)
+            img_h, img_w = image.shape[:2]
+            head_x = max(0, head_x)
+            head_y = max(0, head_y)
+            head_w = min(head_w, img_w - head_x)
+            head_h = min(head_h, img_h - head_y)
+            
+            if head_w > 10 and head_h > 10:
+                head_crop = image[head_y:head_y+head_h, head_x:head_x+head_w]
                 
-                if head_w > 10 and head_h > 10:
-                    head_crop = image[head_y:head_y+head_h, head_x:head_x+head_w]
-                    
-                    # Compute circularity or color uniformity.
-                    # Helmets are usually shiny, smooth, solid colored.
-                    # Hair/Skin has different color distributions.
-                    gray = cv2.cvtColor(head_crop, cv2.COLOR_BGR2GRAY)
-                    blurred = cv2.GaussianBlur(gray, (5, 5), 0)
-                    
-                    # Standard deviation of colors in the head crop
-                    # High standard deviation represents hair texture / face features (no helmet)
-                    # Low standard deviation represents smooth plastic helmet
-                    _, std_dev = cv2.meanStdDev(blurred)
-                    std_dev_val = std_dev[0][0]
-                    
-                    # We also look for circular outlines in the head crop
-                    circles = cv2.HoughCircles(blurred, cv2.HOUGH_GRADIENT, 1.2, 10,
-                                              param1=50, param2=30, minRadius=int(head_w*0.25), maxRadius=int(head_w*0.6))
-                    
-                    has_helmet = (circles is not None) or (std_dev_val < 18.0)
-                    
-                    # Inject a realistic probability if heuristics are borderline
-                    if not has_helmet:
-                        violations.append({
-                            "type": "Helmet Non-compliance",
-                            "confidence": round(0.75 + (0.15 * (1.0 - std_dev_val/50.0 if std_dev_val < 50 else 0)), 2),
-                            "target_bbox": [px, py, pw, ph],
-                            "details": "Rider detected without a helmet"
-                        })
+                gray = cv2.cvtColor(head_crop, cv2.COLOR_BGR2GRAY)
+                blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+                
+                _, std_dev = cv2.meanStdDev(blurred)
+                std_dev_val = std_dev[0][0]
+                
+                circles = cv2.HoughCircles(blurred, cv2.HOUGH_GRADIENT, 1.2, 10,
+                                          param1=50, param2=30, minRadius=int(head_w*0.25), maxRadius=int(head_w*0.6))
+                
+                has_helmet = (circles is not None) or (std_dev_val < 18.0)
+                
+                if not has_helmet:
+                    violations.append({
+                        "type": "Helmet Non-compliance",
+                        "confidence": round(0.75 + (0.15 * (1.0 - std_dev_val/50.0 if std_dev_val < 50 else 0)), 2),
+                        "target_bbox": mc_bbox,
+                        "details": "Rider detected without a helmet"
+                    })
         return violations
 
     def check_seatbelt_compliance(self, detections, image):
@@ -463,31 +479,39 @@ class TrafficCVEngine:
 
     def check_wrong_side(self, detections, settings):
         """
-        Wrong-side driving: Check if a vehicle coordinates place it on the wrong side.
-        Heuristic: We divide the screen vertically or horizontally based on configuration.
+        Wrong-side driving: Check if a vehicle's coordinates place it on the wrong side.
+        In India/Bengaluru, vehicles drive on the left side. So the right side of the screen
+        is for oncoming traffic (correct), and the left side of the screen is for traffic moving away.
+        If a vehicle is on the left side of the screen but heading towards the camera (oncoming), it is wrong-side.
         """
-        # User defined lane divider: e.g. Lane 1 is on the left, moves North. Lane 2 is on the right, moves South.
-        # Let's say if x_center < screen_width/2, it must be facing North/pointing upwards.
-        # For a static image, we simulate a check or check positioning rules.
         violations = []
-        # Simulate wrong-side check with small probability or position-based check
         vehicles = [d for d in detections if d["class"] in ["car", "motorcycle", "truck", "bus"]]
         
+        # Estimate image dimensions from max coordinates of detections
+        max_x = 640
+        max_y = 480
         for v in vehicles:
             vx, vy, vw, vh = v["bbox"]
-            # If a vehicle is far left but its aspect ratio is weird, or we just randomly assign for realism
-            # To make it deterministic for demo, if the vehicle center is inside "wrong side zones"
-            v_center_x = vx + vw/2
+            max_x = max(max_x, vx + vw)
+            max_y = max(max_y, vy + vh)
             
-            # Let's say if lane_directions config is present, we check side:
-            # If lane 1 is left and expects northbound, but vehicle is positioned heading down (which we can estimate from shape/aspect ratio)
-            # In a demo, we trigger if vehicle is in specific coord ranges
-            if 100 < v_center_x < 250 and vy > 300 and (hash(str(v["bbox"])) % 10 == 7):
+        for v in vehicles:
+            vx, vy, vw, vh = v["bbox"]
+            v_center_x = vx + vw/2
+            v_center_y = vy + vh/2
+            
+            # Heuristic: If vehicle is on the left side of the screen (center_x < 38% of image width)
+            # and is positioned in the lower portion of the screen (typically oncoming traffic in traffic cameras)
+            is_wrong_side = False
+            if v_center_x < max_x * 0.38 and v_center_y > max_y * 0.35:
+                is_wrong_side = True
+                
+            if is_wrong_side:
                 violations.append({
                     "type": "Wrong-side Driving",
-                    "confidence": 0.88,
+                    "confidence": 0.91,
                     "target_bbox": v["bbox"],
-                    "details": "Vehicle driving on the incorrect side of the divider"
+                    "details": "Vehicle driving oncoming on the incorrect side of the divider"
                 })
         return violations
 
@@ -603,8 +627,16 @@ class TrafficCVEngine:
             violations.extend(self.check_triple_riding(detections))
             violations.extend(self.check_helmet_compliance(detections, processed_image))
             violations.extend(self.check_seatbelt_compliance(detections, processed_image))
-            violations.extend(self.check_stop_line_violation(detections, settings["stop_line"], settings["traffic_light_state"]))
             violations.extend(self.check_wrong_side(detections, settings))
+            
+            # Exclude vehicles flagged as wrong-side driving from crossing stop line red-light check
+            wrong_side_bboxes = [viol["target_bbox"] for viol in violations if viol["type"] == "Wrong-side Driving"]
+            remaining_detections = [
+                d for d in detections 
+                if d["bbox"] not in wrong_side_bboxes
+            ]
+            
+            violations.extend(self.check_stop_line_violation(remaining_detections, settings["stop_line"], settings["traffic_light_state"]))
             violations.extend(self.check_illegal_parking(detections, settings["no_parking_zone"]))
             
             # Detect plates & OCR for each vehicle
