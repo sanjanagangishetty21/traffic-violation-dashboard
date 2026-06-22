@@ -60,7 +60,17 @@ if (
 
 function getMockViolations() {
     let list = localStorage.getItem("apic_violations");
-    if (!list) {
+    let parsedList = null;
+    try {
+        if (list) parsedList = JSON.parse(list);
+    } catch (e) {
+        parsedList = null;
+    }
+    
+    // Reset if list doesn't exist, isn't an array, or doesn't have enough pending items (e.g. less than 25)
+    const needsReset = !parsedList || !Array.isArray(parsedList) || parsedList.filter(item => item.status === "pending").length < 25;
+    
+    if (needsReset) {
         const violationTypes = [
             "Helmet Non-compliance",
             "Seatbelt Non-compliance",
@@ -96,6 +106,17 @@ function getMockViolations() {
             const num = Math.floor(1000 + Math.random() * 9000);
             const letters = String.fromCharCode(65 + Math.floor(Math.random() * 26)) + String.fromCharCode(65 + Math.floor(Math.random() * 26));
             
+            // Status distribution: 60% pending, 25% approved, 15% rejected
+            const rand = Math.random();
+            let status = "pending";
+            if (rand < 0.60) {
+                status = "pending";
+            } else if (rand < 0.85) {
+                status = "approved";
+            } else {
+                status = "rejected";
+            }
+            
             mockList.push({
                 id: i,
                 timestamp: date.toISOString(),
@@ -105,14 +126,14 @@ function getMockViolations() {
                 confidence: parseFloat((0.72 + Math.random() * 0.25).toFixed(2)),
                 image_path: `/static/sample_traffic_${(i % 10) + 1}.jpg`,
                 annotated_image_path: `/static/ann_sample_traffic_${(i % 10) + 1}.jpg`,
-                status: Math.random() < 0.7 ? "approved" : (Math.random() < 0.5 ? "pending" : "rejected")
+                status: status
             });
         }
         mockList.sort((a, b) => b.id - a.id);
         localStorage.setItem("apic_violations", JSON.stringify(mockList));
         return mockList;
     }
-    return JSON.parse(list);
+    return parsedList;
 }
 
 function generateTrafficScene(violationType, isAnnotated, plateText) {

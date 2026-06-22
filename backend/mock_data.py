@@ -10,10 +10,19 @@ def generate_mock_data():
     cursor.execute("SELECT COUNT(*) FROM violations")
     count = cursor.fetchone()[0]
     
-    if count > 0:
+    # Check count of pending violations
+    cursor.execute("SELECT COUNT(*) FROM violations WHERE status = 'pending'")
+    pending_count = cursor.fetchone()[0]
+    
+    if count > 0 and pending_count >= 25:
         print("[INFO] Database already populated with records.")
         conn.close()
         return
+        
+    if count > 0:
+        print("[INFO] Rebuilding database to update status distribution with more pending items...")
+        cursor.execute("DELETE FROM violations")
+        conn.commit()
         
     print("[INFO] Pre-populating database with rich traffic violation logs for the last 7 days...")
     
@@ -71,12 +80,12 @@ def generate_mock_data():
         
         confidence = round(random.uniform(0.72, 0.98), 2)
         
-        # Status: 70% approved, 15% pending, 15% rejected
+        # Status distribution: 60% pending, 25% approved, 15% rejected
         status_roll = random.random()
-        if status_roll < 0.70:
-            status = "approved"
-        elif status_roll < 0.85:
+        if status_roll < 0.60:
             status = "pending"
+        elif status_roll < 0.85:
+            status = "approved"
         else:
             status = "rejected"
             
