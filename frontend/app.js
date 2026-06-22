@@ -45,17 +45,9 @@ let noParkingPoints = [];
 let charts = {};
 
 let isBrowserDemoMode = false;
-const devPorts = ["3000", "5000", "5500", "8080", "8081"];
-if (
-    window.location.hostname.includes("vercel.app") ||
-    window.location.hostname.includes("github.io") ||
-    window.location.hostname.includes("netlify.app") ||
-    window.location.protocol === "file:" ||
-    devPorts.includes(window.location.port) ||
-    (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1")
-) {
+if (window.location.protocol === "file:") {
     isBrowserDemoMode = true;
-    console.log("[APIC-TV] Browser-only simulation mode active (static deployment, dev port, or file protocol detected).");
+    console.log("[APIC-TV] Browser-only simulation mode active (file protocol detected).");
 }
 
 function getMockViolations() {
