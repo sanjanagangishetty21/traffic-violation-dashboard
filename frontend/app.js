@@ -941,7 +941,8 @@ function setupFileUpload() {
         btnVideoSimulate.addEventListener("click", async () => {
             document.getElementById("monitor-loading").style.display = "flex";
             try {
-                const videoRes = await fetch("/static/sample_violations.mp4");
+                const videoUrl = isBrowserDemoMode ? "sample_violations.mp4" : "/static/sample_violations.mp4";
+                const videoRes = await fetch(videoUrl);
                 if (!videoRes.ok) {
                     throw new Error("Video file not found or server offline");
                 }
@@ -951,7 +952,7 @@ function setupFileUpload() {
             } catch (err) {
                 console.error("Error fetching simulation video:", err);
                 document.getElementById("monitor-loading").style.display = "none";
-                showToast("Failed to load sample video. Make sure backend server is running.", "error");
+                showToast("Failed to load sample video.", "error");
             }
         });
     }
@@ -960,7 +961,8 @@ function setupFileUpload() {
 async function uploadFile(file) {
     // Check if the uploaded file is a video
     if (file.type.startsWith("video/") || /\.(mp4|webm|avi|mov|mkv)$/i.test(file.name)) {
-        return uploadVideo(file);
+        showToast("Video uploads are not supported. Please upload an image.", "warning");
+        return;
     }
     
     // Stop any active video playback and clear interval
@@ -1372,9 +1374,12 @@ async function uploadVideo(file) {
     
     if (isBrowserDemoMode) {
         const isSampleVideo = file.name && file.name.toLowerCase().includes("sample_violations");
-        if (isSampleVideo) {
+        const isTrafficVideo = file.name && file.name.toLowerCase().includes("traffic_video");
+        if (isSampleVideo || isTrafficVideo) {
             try {
-                const response = await fetch("sample_violations_detections.json");
+                const jsonFile = isTrafficVideo ? "traffic_video_detections.json" : "sample_violations_detections.json";
+                const response = await fetch(jsonFile);
+
                 if (!response.ok) throw new Error("Detections JSON file not found");
                 const results = await response.json();
                 
